@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElMariachi.WPF.Tools", "ElMariachi.WPF.Tools\ElMariachi.WPF.Tools.csproj", "{68F663F8-AB12-403C-AD22-E2D4B381EC5D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElMariachi.WPF.Tools.Test", "ElMariachi.WPF.Tools.Test\ElMariachi.WPF.Tools.Test.csproj", "{D820E309-C601-468F-A9CF-20A6513706C1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{68F663F8-AB12-403C-AD22-E2D4B381EC5D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68F663F8-AB12-403C-AD22-E2D4B381EC5D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68F663F8-AB12-403C-AD22-E2D4B381EC5D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68F663F8-AB12-403C-AD22-E2D4B381EC5D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D820E309-C601-468F-A9CF-20A6513706C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D820E309-C601-468F-A9CF-20A6513706C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D820E309-C601-468F-A9CF-20A6513706C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D820E309-C601-468F-A9CF-20A6513706C1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
