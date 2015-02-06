@@ -1,28 +1,29 @@
 ﻿namespace ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands
 {
     /// <summary>
-    /// Interface représentant une commande pouvant être annulée
+    /// Interface representing a revertible action
+    /// Implement <see cref="Do"/> to perform a change and implement <see cref="Undo"/> to revert this change
     /// </summary>
     public interface IRevertibleCommand
     {
 
         /// <summary>
-        /// Obtient un l'identifiant unique cette instance
+        /// Gets the unique ID of this Revertible command among all instantiated commands
         /// </summary>
         long Id { get; }
 
         /// <summary>
-        /// Obtient un indication sur la nature de l'action réalisée par cette commande
+        /// Gets a description of the action performed by this command when <see cref="Do"/> or <see cref="Undo"/> is called
         /// </summary>
         string Description { get; }
 
         /// <summary>
-        /// Méthode réalisant la modification souhaitée
+        /// Executes the command
         /// </summary>
         void Do();
 
         /// <summary>
-        /// Méthode permettant d'annuler la modification apportée par l'execution de la méthode <see cref="Do"/>
+        /// Reverts the action performed by the <see cref="Do"/> method
         /// </summary>
         void Undo();
 

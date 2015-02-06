@@ -7,86 +7,83 @@ namespace ElMariachi.WPF.Tools.UndoRedo
     {
 
         /// <summary>
-        /// Evènement déclenché lorsqu'une commande est sur le point d'être executée
+        /// Event triggered just before a <see cref="IRevertibleCommand"/> is added but not yet executed (<see cref="AddExecutedCommand"/>)
         /// </summary>
         event BeforeUndoRedoCommandExecutedEventHandler BeforeUndoRedoCommandExecuted;
 
         /// <summary>
-        /// Evènement déclenché lorsqu'une commande vient d'être executée
+        /// Event triggered just after a <see cref="IRevertibleCommand"/> is added and executed (<see cref="AddExecutedCommand"/>)
         /// </summary>
         event UndoRedoCommandExecutedEventHandler UndoRedoCommandExecuted;
 
         /// <summary>
-        /// Obtient un booléen qui indique si une opération d'undo est en cours
+        /// Event triggered when <see cref="CanUndo"/> is changed
+        /// </summary>
+        event CanUndoChangedEventHandler CanUndoChanged;
+
+        /// <summary>
+        /// Event triggered when <see cref="CanRedo"/> is changed
+        /// </summary>
+        event CanRedoChangedEventHandler CanRedoChanged;
+
+        /// <summary>
+        /// Get an informative array of available stacked revertible commands
+        /// </summary>
+        UndoRedoStackInfo[] StackInfo { get; }
+
+        /// <summary>
+        /// Gets a boolean indicating whether an <see cref="Undo"/> operation is currently executed
         /// </summary>
         bool IsUndoing { get; }  
         
         /// <summary>
-        /// Obtient un booléen qui indique si une opération de redo est en cours
+        /// Gets a boolean indicating whether a <see cref="Redo"/> operation is currently executed
         /// </summary>
         bool IsRedoing { get; }
 
         /// <summary>
-        /// Obtient le nombre d'Undo disponibles
+        /// Gets the number of available <see cref="Undo"/> operations
         /// </summary>
         int NbUndo { get; }
 
         /// <summary>
-        /// Obtient le nombre de redo disponibles
+        /// Gets the number of available <see cref="Redo"/> operations
         /// </summary>
         int NbRedo { get; }
 
         /// <summary>
-        /// Ajoute et execute la nouvelle commande reversible passée.
+        /// Gets a boolean indicating whether the method <see cref="Undo"/> can be called
         /// </summary>
-        /// <param name="revertibleCommand"></param>
-        /// <returns></returns>
-        bool Execute(IRevertibleCommand revertibleCommand);
+        bool CanUndo { get; }
 
         /// <summary>
-        /// Ajoute la commande reversible déjà executée à la liste des commandes
+        /// Gets a boolean indicating whether the method <see cref="Redo"/> can be called
+        /// </summary>
+        /// <returns></returns>
+        bool CanRedo { get; }
+
+        /// <summary>
+        /// Executes the <see cref="IRevertibleCommand"/> calling the <see cref="IRevertibleCommand.Do"/> method and
+        /// adds the command to the stack
+        /// </summary>
+        /// <param name="revertibleCommand">The command to be executed</param>
+        void Execute(IRevertibleCommand revertibleCommand);
+
+        /// <summary>
+        /// Adds the <see cref="IRevertibleCommand"/> to the stack without executing it
         /// </summary>
         /// <param name="revertibleCommand"></param>
         void AddExecutedCommand(IRevertibleCommand revertibleCommand);
 
         /// <summary>
-        /// Obtient un booléen indiquant s'il est possible d'executer la fonction <see cref="Undo"/>
-        /// </summary>
-        /// <returns></returns>
-        bool CanUndo();
-
-        /// <summary>
-        /// Obtient un booléen indiquant s'il est possible d'executer la fonction <see cref="Redo"/>
-        /// </summary>
-        /// <returns></returns>
-        bool CanRedo();
-
-        /// <summary>
-        /// Re-execute l'action
+        /// Calls <see cref="IRevertibleCommand.Do"/> of the focused stacked command
         /// </summary>
         void Redo();
 
         /// <summary>
-        /// Restaure l'action
+        /// Calls <see cref="IRevertibleCommand.Undo"/> of the focused stacked command
         /// </summary>
         void Undo();
-
-
-        UndoRedoStackData[] UndoRedoStack { get; }
-
-    }
-
-    public class UndoRedoStackData
-    {
-        public UndoRedoStackData(long revertibleCommandId, string description)
-        {
-            Description = description;
-            RevertibleCommandId = revertibleCommandId;
-        }
-
-        public long RevertibleCommandId { get; private set; }
-
-        public string Description { get; private set; }
 
     }
 }

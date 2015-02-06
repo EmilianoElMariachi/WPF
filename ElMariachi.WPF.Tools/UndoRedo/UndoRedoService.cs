@@ -13,11 +13,11 @@ namespace ElMariachi.WPF.Tools.UndoRedo
         private readonly object _lock = new object();
         private readonly List<IRevertibleCommand> _revertibleCommandsStack = new List<IRevertibleCommand>();
 
-        public UndoRedoStackData[] UndoRedoStack
+        public UndoRedoStackInfo[] StackInfo
         {
             get
             {
-                return _revertibleCommandsStack.Select((revertibleCommand) => new UndoRedoStackData(revertibleCommand.Id, revertibleCommand.Description)).ToArray();
+                return _revertibleCommandsStack.Select((revertibleCommand) => new UndoRedoStackInfo(revertibleCommand.Id, revertibleCommand.Description)).ToArray();
             }
         }
 
@@ -49,6 +49,48 @@ namespace ElMariachi.WPF.Tools.UndoRedo
             }
         }
 
+        private bool _canUndo;
+
+        public bool CanUndo
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _canUndo;
+                }
+            }
+            private set
+            {
+                if (value != _canUndo)
+                {
+                    _canUndo = value;
+                    NotifyCanUndoChanged(new CanUndoChangedEventHandlerArgs(_canUndo));
+                }
+            }
+        }
+
+        private bool _canRedo;
+
+        public bool CanRedo
+        {
+            get
+            {
+                lock (_lock)
+                {
+                    return _canRedo;
+                }
+            }
+            private set
+            {
+                if (value != _canRedo)
+                {
+                    _canRedo = value;
+                    NotifyCanRedoChanged(new CanRedoChangedEventHandlerArgs(_canRedo));
+                }
+            }
+        }
+
         #endregion
 
         #region Events
@@ -75,11 +117,33 @@ namespace ElMariachi.WPF.Tools.UndoRedo
             }
         }
 
+        public event CanUndoChangedEventHandler CanUndoChanged;
+
+        protected virtual void NotifyCanUndoChanged(CanUndoChangedEventHandlerArgs args)
+        {
+            var handler = CanUndoChanged;
+            if (handler != null)
+            {
+                handler(this, args);
+            }
+        }
+
+        public event CanRedoChangedEventHandler CanRedoChanged;
+
+        protected virtual void NotifyCanRedoChanged(CanRedoChangedEventHandlerArgs args)
+        {
+            var handler = CanRedoChanged;
+            if (handler != null)
+            {
+                handler(this, args);
+            }
+        }
+
         #endregion
 
         #region Public Methods
 
-        public bool Execute(IRevertibleCommand revertibleCommand)
+        public void Execute(IRevertibleCommand revertibleCommand)
         {
             lock (_lock)
             {
@@ -91,7 +155,7 @@ namespace ElMariachi.WPF.Tools.UndoRedo
 
                 NotifyUndoRedoCommandExecuted(new UndoRedoCommandExecutedEventHandlerArgs(UndoRedoExecutionCategory.NEW));
 
-                return true;
+                UpdateCanUndoCanRedo();
             }
         }
 
@@ -102,22 +166,7 @@ namespace ElMariachi.WPF.Tools.UndoRedo
                 PruneCommands();
                 _revertibleCommandsStack.Add(revertibleCommand);
                 _currentDoneCommandStackIndex = _revertibleCommandsStack.Count - 1;
-            }
-        }
-
-        public bool CanUndo()
-        {
-            lock (_lock)
-            {
-                return _currentDoneCommandStackIndex >= 0;
-            }
-        }
-
-        public bool CanRedo()
-        {
-            lock (_lock)
-            {
-                return _currentDoneCommandStackIndex < (_revertibleCommandsStack.Count - 1);
+                UpdateCanUndoCanRedo();
             }
         }
 
@@ -125,7 +174,7 @@ namespace ElMariachi.WPF.Tools.UndoRedo
         {
             lock (_lock)
             {
-                if (!this.CanRedo())
+                if (!this.CanRedo)
                 {
                     return;
                 }
@@ -142,6 +191,8 @@ namespace ElMariachi.WPF.Tools.UndoRedo
                     IsRedoing = false;
                 }
                 NotifyUndoRedoCommandExecuted(new UndoRedoCommandExecutedEventHandlerArgs(UndoRedoExecutionCategory.REDO));
+
+                UpdateCanUndoCanRedo();
             }
         }
 
@@ -149,7 +200,7 @@ namespace ElMariachi.WPF.Tools.UndoRedo
         {
             lock (_lock)
             {
-                if (!this.CanUndo())
+                if (!this.CanUndo)
                 {
                     return;
                 }
@@ -166,6 +217,8 @@ namespace ElMariachi.WPF.Tools.UndoRedo
                     IsUndoing = false;
                 }
                 NotifyUndoRedoCommandExecuted(new UndoRedoCommandExecutedEventHandlerArgs(UndoRedoExecutionCategory.UNDO));
+
+                UpdateCanUndoCanRedo();
             }
         }
 
@@ -174,7 +227,7 @@ namespace ElMariachi.WPF.Tools.UndoRedo
         #region Private Methods
 
         /// <summary>
-        /// Supprime toutes les commandes qui suivent la commande à l'index courant
+        /// Removes all commands following the currently focused command
         /// </summary>
         private void PruneCommands()
         {
@@ -183,6 +236,15 @@ namespace ElMariachi.WPF.Tools.UndoRedo
             if (numberOfElementsToDelete > 0)
             {
                 _revertibleCommandsStack.RemoveRange(firstDeletionIndex, numberOfElementsToDelete);
+            }
+        }
+
+        private void UpdateCanUndoCanRedo()
+        {
+            lock (_lock)
+            {
+                this.CanUndo = _currentDoneCommandStackIndex >= 0;
+                this.CanRedo = _currentDoneCommandStackIndex < (_revertibleCommandsStack.Count - 1);
             }
         }
 

@@ -66,8 +66,12 @@
     <Compile Include="Modelling\ModelRecording\PrivateClasses\RecordedElementFactory.cs" />
     <Compile Include="Modelling\NotifyPropertyChangedImpl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UndoRedo\EventsDefinition\CanUndoChangedEventHandlerArgs.cs" />
+    <Compile Include="UndoRedo\EventsDefinition\CanUndoChangedEventHandler.cs" />
     <Compile Include="UndoRedo\EventsDefinition\BeforeUndoRedoCommandExecutedEventHandler.cs" />
     <Compile Include="UndoRedo\EventsDefinition\BeforeUndoRedoCommandExecutedEventHandlerArgs.cs" />
+    <Compile Include="UndoRedo\EventsDefinition\CanRedoChangedEventHandler.cs" />
+    <Compile Include="UndoRedo\EventsDefinition\CanRedoChangedEventHandlerArgs.cs" />
     <Compile Include="UndoRedo\EventsDefinition\UndoRedoCommandExecutedEventHandler.cs" />
     <Compile Include="UndoRedo\EventsDefinition\UndoRedoCommandExecutedEventHandlerArgs.cs" />
     <Compile Include="UndoRedo\IUndoRedoService.cs" />
@@ -81,6 +85,7 @@
     <Compile Include="UndoRedo\RevertibleCommands\RevertibleCommandGroup.cs" />
     <Compile Include="UndoRedo\UndoRedoExecutionCategory.cs" />
     <Compile Include="UndoRedo\UndoRedoService.cs" />
+    <Compile Include="UndoRedo\UndoRedoStackInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

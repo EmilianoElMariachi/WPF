@@ -208,8 +208,8 @@ namespace ElMariachi.WPF.Tools.Test.Modelling.ModelRecording
 
             _recordedModel.NonRecordedString += "Hello!";
 
-            Assert.IsFalse(_undoRedoService.CanRedo());
-            Assert.IsFalse(_undoRedoService.CanUndo());
+            Assert.IsFalse(_undoRedoService.CanRedo);
+            Assert.IsFalse(_undoRedoService.CanUndo);
         }
 
         [Test]
@@ -218,22 +218,22 @@ namespace ElMariachi.WPF.Tools.Test.Modelling.ModelRecording
             _modelRecorder.Record(_undoRedoService, _recordedModel);
 
             var initialValue = _recordedModel.IsTrue;
-            Assert.IsFalse(_undoRedoService.CanUndo());
-            Assert.IsFalse(_undoRedoService.CanRedo());
+            Assert.IsFalse(_undoRedoService.CanUndo);
+            Assert.IsFalse(_undoRedoService.CanRedo);
 
             _recordedModel.IsTrue = !initialValue;
-            Assert.IsTrue(_undoRedoService.CanUndo());
-            Assert.IsFalse(_undoRedoService.CanRedo());
+            Assert.IsTrue(_undoRedoService.CanUndo);
+            Assert.IsFalse(_undoRedoService.CanRedo);
 
             _undoRedoService.Undo();
             Assert.AreEqual(_recordedModel.IsTrue, initialValue);
-            Assert.IsFalse(_undoRedoService.CanUndo());
-            Assert.IsTrue(_undoRedoService.CanRedo());
+            Assert.IsFalse(_undoRedoService.CanUndo);
+            Assert.IsTrue(_undoRedoService.CanRedo);
 
             _undoRedoService.Redo();
             Assert.AreEqual(_recordedModel.IsTrue, !initialValue);
-            Assert.IsTrue(_undoRedoService.CanUndo());
-            Assert.IsFalse(_undoRedoService.CanRedo());
+            Assert.IsTrue(_undoRedoService.CanUndo);
+            Assert.IsFalse(_undoRedoService.CanRedo);
         }
 
         [Test]
