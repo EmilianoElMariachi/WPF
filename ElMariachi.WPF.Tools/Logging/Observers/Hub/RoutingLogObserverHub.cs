@@ -1,4 +1,5 @@
-﻿using ElMariachi.WPF.Tools.Logging.Observers.Hub.EventsDefinition;
+﻿using ElMariachi.WPF.Tools.Logging.LoggedItems;
+using ElMariachi.WPF.Tools.Logging.Observers.Hub.EventsDefinition;
 
 namespace ElMariachi.WPF.Tools.Logging.Observers.Hub
 {

@@ -17,7 +17,7 @@ namespace ElMariachi.WPF.Tools.Modelling.DirtyModelDetection.PrivateClasses
 
         #endregion
 
-        #region Constructor(s)
+        #region Constructors
 
         public ObservableCollectionSnapshot(DirtyModelDetector modelDetector,
             INotifyCollectionChanged iCollectionAsINotifyCollectionChanged, IEnumerable listenedCollectionAsIEnumerable)

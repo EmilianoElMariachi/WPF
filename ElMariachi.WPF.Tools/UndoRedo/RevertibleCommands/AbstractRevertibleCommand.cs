@@ -15,7 +15,7 @@ namespace ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands
 
         #endregion
 
-        #region Constructor(s)
+        #region Constructors
 
         public AbstractRevertibleCommand()
         {

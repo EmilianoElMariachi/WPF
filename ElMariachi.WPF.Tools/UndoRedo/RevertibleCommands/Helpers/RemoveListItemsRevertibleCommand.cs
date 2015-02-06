@@ -18,7 +18,7 @@ namespace ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands.Helpers
 
         #endregion
 
-        #region Constructor(s)
+        #region Constructors
 
         public RemoveListItemsRevertibleCommand(IList<T> collection, IEnumerable<T> itemsToRemove, string description = null)
         {

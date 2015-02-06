@@ -13,7 +13,7 @@ namespace ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands.Helpers
 
         #endregion
 
-        #region Constructor(s)
+        #region Constructors
 
         public AddListItemsRevertibleCommand(IList<T> collection, IEnumerable<T> itemsToAdd, string description = null)
         {

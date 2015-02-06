@@ -1,25 +1,26 @@
 ﻿using System;
-using System.Diagnostics;
-using ElMariachi.WPF.Tools.Logging.Observers.ToFile;
+using ElMariachi.WPF.Tools.Logging.EventsDefinition;
+using ElMariachi.WPF.Tools.Logging.LoggedItems;
+using ElMariachi.WPF.Tools.Logging.LoggedItems.Formatters;
 
 namespace ElMariachi.WPF.Tools.Logging.Observers
 {
-    public abstract class FormattingLogObserver
+
+    /// <summary>
+    /// This class has a basic implementation used for listening a <see cref="IObservableLog"/> and formatting received <see cref="ILoggedItem"/>
+    /// Inherit this class and implement method <see cref="OnLoggedItem"/> to handle formatted logged items from the <see cref="IObservableLog"/> given at constructor
+    /// </summary>
+    public abstract class FormattingLogObserver : IDisposable
     {
+
         #region Fields & Properties
 
         private readonly IObservableLog _observableLog;
+        private readonly ILoggedItemFormatter _loggedItemFormatter;
 
         public IObservableLog ObservedLog
         {
             get { return _observableLog; }
-        }
-
-        private readonly ILoggedItemFormatter _loggedItemFormatter;
-
-        public ILoggedItemFormatter LoggedItemFormatter
-        {
-            get { return _loggedItemFormatter; }
         }
 
         #endregion
@@ -28,59 +29,31 @@ namespace ElMariachi.WPF.Tools.Logging.Observers
 
         public FormattingLogObserver(IObservableLog observableLog, ILoggedItemFormatter loggedItemFormatter)
         {
-            if (observableLog == null)
-            {
-                throw new ArgumentNullException("observableLog", "Can't create \"" + this.GetType().Name + "\" with null \"" + typeof(IObservableLog) + "\".");
-            }
-
-            if (loggedItemFormatter == null)
-            {
-                throw new ArgumentNullException("loggedItemFormatter", "Can't create \"" + this.GetType().Name + "\" with null \"" + typeof(ILoggedItemFormatter) + "\".");
-            }
+            if (observableLog == null) { throw new ArgumentNullException("observableLog"); }
+            if (loggedItemFormatter == null) { throw new ArgumentNullException("loggedItemFormatter"); }
 
             _observableLog = observableLog;
             _loggedItemFormatter = loggedItemFormatter;
-
-            ObservedLog.LogEvent += OnLogEvent;
-        }
-
-        ~FormattingLogObserver()
-        {
-            ObservedLog.LogEvent -= OnLogEvent;
+            _observableLog.LogEvent += OnLogEvent;
         }
 
         #endregion
 
         #region Methods
 
-        protected abstract void OnFormattedLogMessage(string formattedMessage, ILoggedItem originalLoggedItem);
-
-        protected void LogUnexpectedExceptionToConsole(Exception ex)
+        public virtual void Dispose()
         {
-            if (ex != null)
-            {
-#if DEBUG
-                if (Debugger.IsAttached)
-                {
-                    Debugger.Break();
-                }
-#endif
-
-                try
-                {
-                    Console.Error.WriteLine(typeof(ToFileAsyncLogObserver).Name + " Error : " + ex.Message);
-                }
-                catch
-                {
-                }
-            }
+            _observableLog.LogEvent -= OnLogEvent;
         }
+
+        protected abstract void OnLoggedItem(string formattedLoggedItem, ILoggedItem loggedItem);
 
         private void OnLogEvent(object sender, LogEventHandlerArgs args)
         {
-            this.OnFormattedLogMessage(LoggedItemFormatter.Format(args.LoggedItem), args.LoggedItem);
+            this.OnLoggedItem(_loggedItemFormatter.Format(args.LoggedItem), args.LoggedItem);
         }
 
         #endregion
+
     }
 }

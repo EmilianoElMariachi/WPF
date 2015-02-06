@@ -3,7 +3,7 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
     internal class DefaultRecordedElement : RecordedElement
     {
 
-        #region Constructor(s)
+        #region Constructors
 
         internal DefaultRecordedElement(object oldValue)
             : base(oldValue)

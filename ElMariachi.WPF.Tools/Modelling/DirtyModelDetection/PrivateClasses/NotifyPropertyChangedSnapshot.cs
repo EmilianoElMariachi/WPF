@@ -18,7 +18,7 @@ namespace ElMariachi.WPF.Tools.Modelling.DirtyModelDetection.PrivateClasses
 
         #endregion
 
-        #region Constructor(s)
+        #region Constructors
 
         public NotifyPropertyChangedSnapshot(DirtyModelDetector modelDetector, INotifyPropertyChanged snapshotValue)
             : base(modelDetector, snapshotValue)

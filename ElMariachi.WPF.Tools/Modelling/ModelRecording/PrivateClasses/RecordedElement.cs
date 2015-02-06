@@ -14,7 +14,7 @@
 
         #endregion
 
-        #region Constructor(s)
+        #region Constructors
 
         internal RecordedElement(object oldValue)
         {

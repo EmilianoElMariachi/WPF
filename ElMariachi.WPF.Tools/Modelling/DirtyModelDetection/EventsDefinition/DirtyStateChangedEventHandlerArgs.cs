@@ -27,7 +27,7 @@
 
         #endregion
 
-        #region Constructor(s)
+        #region Constructors
 
         internal DirtyStateChangedEventHandlerArgs(object observedModel, bool isDirty)
         {

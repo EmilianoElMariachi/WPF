@@ -65,7 +65,7 @@ namespace ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands.Helpers
 
         #endregion
 
-        #region Constructor(s)
+        #region Constructors
 
         public UndoRedoDelayedExecutedRevertibleCommandAppender(IUndoRedoService undoRedoService, object instance, PropertyInfo propertyInfo)
         {

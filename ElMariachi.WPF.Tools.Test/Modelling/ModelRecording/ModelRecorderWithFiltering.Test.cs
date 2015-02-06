@@ -138,7 +138,7 @@ namespace ElMariachi.WPF.Tools.Test.Modelling.ModelRecording
                 set
                 {
                     _text = value;
-                    NotifyPropertyChanged("Text");
+                    NotifyPropertyChanged("warning");
                 }
             }
 

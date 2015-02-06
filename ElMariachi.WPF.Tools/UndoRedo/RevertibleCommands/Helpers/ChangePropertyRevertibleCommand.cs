@@ -23,7 +23,7 @@ namespace ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands.Helpers
 
         #endregion
 
-        #region Constructor(s)
+        #region Constructors
 
         public ChangePropertyRevertibleCommand(object propertyOwnerObj, PropertyInfo propertyInfo, object newValue, object oldValue, string description = "")
         {

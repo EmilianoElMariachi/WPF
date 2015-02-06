@@ -1,4 +1,6 @@
-namespace ElMariachi.WPF.Tools.Logging
+using ElMariachi.WPF.Tools.Logging.LoggedItems;
+
+namespace ElMariachi.WPF.Tools.Logging.EventsDefinition
 {
     public class LogEventHandlerArgs
     {

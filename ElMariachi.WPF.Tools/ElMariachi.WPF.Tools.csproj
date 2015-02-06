@@ -45,31 +45,32 @@
     <Compile Include="Commands\AbstractCommand.cs" />
     <Compile Include="Commands\Command.cs" />
     <Compile Include="Logging\EventsDefinition\LogEventHandlerArgs.cs" />
-    <Compile Include="Logging\ILoggedException.cs" />
-    <Compile Include="Logging\ILoggedItem.cs" />
+    <Compile Include="Logging\LoggedItems\ILoggedItem.cs" />
     <Compile Include="Logging\ILogger.cs" />
     <Compile Include="Logging\IObservableLog.cs" />
     <Compile Include="Logging\IObservableLogger.cs" />
     <Compile Include="Logging\EventsDefinition\LogEventHandler.cs" />
+    <Compile Include="Logging\LoggedItems\LoggedError.cs" />
+    <Compile Include="Logging\LoggedItems\LoggedException.cs" />
+    <Compile Include="Logging\LoggedItems\LoggedInfo.cs" />
+    <Compile Include="Logging\LoggedItems\LoggedWarning.cs" />
     <Compile Include="Logging\ObservableLogger.cs" />
     <Compile Include="Logging\Observers\FormattingLogObserver.cs" />
     <Compile Include="Logging\Observers\Hub\AbstractLogObserverHub.cs" />
     <Compile Include="Logging\Observers\Hub\EventsDefinition\FormattedLogEventHandlerArgs.cs" />
     <Compile Include="Logging\Observers\Hub\EventsDefinition\FormattedLogEventHandler.cs" />
-    <Compile Include="Logging\Observers\Hub\RoutingLogObserver.cs" />
+    <Compile Include="Logging\Observers\Hub\RoutingFormattingLogObserver.cs" />
     <Compile Include="Logging\Observers\Hub\RoutingLogObserverHub.cs" />
-    <Compile Include="Logging\Observers\ILoggedItemFormatter.cs" />
-    <Compile Include="Logging\Observers\ToConsoleLogObserver.cs" />
+    <Compile Include="Logging\LoggedItems\Formatters\ILoggedItemFormatter.cs" />
+    <Compile Include="Logging\Observers\ToConsoleFormattingLogObserver.cs" />
     <Compile Include="Logging\Observers\ToFile\TimeoutResult.cs" />
-    <Compile Include="Logging\Observers\ToFile\ToFileAsyncLogObserver.cs" />
-    <Compile Include="Logging\Observers\ToFile\ToFileSyncLogObserver.cs" />
-    <Compile Include="Logging\Observers\ToStringLogObserver.cs" />
-    <Compile Include="Logging\Tools\BasicLogFormatter.cs" />
-    <Compile Include="Logging\Tools\DefaultExceptionFormatter.cs" />
-    <Compile Include="Logging\Tools\IDateFormatter.cs" />
-    <Compile Include="Logging\Tools\IExceptionFormatter.cs" />
-    <Compile Include="Logging\Tools\TimestampedLogFormatter.cs" />
-    <Compile Include="Logging\Tools\UTCDateFormatter.cs" />
+    <Compile Include="Logging\Observers\ToFile\ToFileAsyncFormattingLogObserver.cs" />
+    <Compile Include="Logging\Observers\ToFile\ToFileSyncFormattingLogObserver.cs" />
+    <Compile Include="Logging\Observers\ToStringFormattingLogObserver.cs" />
+    <Compile Include="Logging\LoggedItems\Formatters\BasicLoggedItemFormatter.cs" />
+    <Compile Include="Logging\LoggedItems\Formatters\IDateFormatter.cs" />
+    <Compile Include="Logging\LoggedItems\Formatters\TimestampedLogFormatter.cs" />
+    <Compile Include="Logging\LoggedItems\Formatters\UTCDateFormatter.cs" />
     <Compile Include="Modelling\DirtyModelDetection\Attributes\IsSerialized.cs" />
     <Compile Include="Modelling\DirtyModelDetection\DirtyModelDetector.cs" />
     <Compile Include="Modelling\DirtyModelDetection\EventsDefinition\DirtyStateChangedEventHandler.cs" />
@@ -113,6 +114,7 @@
     <Compile Include="UndoRedo\UndoRedoService.cs" />
     <Compile Include="UndoRedo\UndoRedoStackInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

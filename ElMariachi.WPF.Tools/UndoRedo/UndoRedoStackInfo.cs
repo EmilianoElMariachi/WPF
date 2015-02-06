@@ -19,7 +19,7 @@ namespace ElMariachi.WPF.Tools.UndoRedo
 
         #endregion
 
-        #region Constructor(s)
+        #region Constructors
 
         public UndoRedoStackInfo(long revertibleCommandId, string description)
         {

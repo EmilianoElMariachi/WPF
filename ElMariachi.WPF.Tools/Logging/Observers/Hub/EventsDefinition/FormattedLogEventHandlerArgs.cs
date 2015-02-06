@@ -1,4 +1,6 @@
-﻿namespace ElMariachi.WPF.Tools.Logging.Observers.Hub.EventsDefinition
+﻿using ElMariachi.WPF.Tools.Logging.LoggedItems;
+
+namespace ElMariachi.WPF.Tools.Logging.Observers.Hub.EventsDefinition
 {
     public class FormattedLogEventHandlerArgs
     {

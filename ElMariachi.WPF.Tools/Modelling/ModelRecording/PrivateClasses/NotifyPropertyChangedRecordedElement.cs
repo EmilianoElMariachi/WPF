@@ -19,7 +19,7 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
 
         #endregion
 
-        #region Constructor(s)
+        #region Constructors
 
         internal NotifyPropertyChangedRecordedElement(IUndoRedoService undoRedoService, INotifyPropertyChanged objAsNotifyPropertyChanged)
             : base(objAsNotifyPropertyChanged)
@@ -100,7 +100,7 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
         private class EveryChangeRecordProperty : Property
         {
 
-            #region Constructor(s)
+            #region Constructors
 
             internal EveryChangeRecordProperty(IUndoRedoService undoRedoService, INotifyPropertyChanged propertyOwnerObj, PropertyInfo propertyInfo, RecordedElement initialPropertyValue, IsRecordableAttribute isRecordableAttribute)
                 : base(undoRedoService, propertyOwnerObj, propertyInfo, initialPropertyValue, isRecordableAttribute)
@@ -129,7 +129,7 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
 
             #endregion
 
-            #region Constructor(s)
+            #region Constructors
 
             internal FilteredChangeRecordProperty(IUndoRedoService undoRedoService, INotifyPropertyChanged propertyOwnerObj, PropertyInfo propertyInfo, RecordedElement initialPropertyValue, IsRecordableWithFilterAttribute isRecordableWithFilterAttribute)
                 : base(undoRedoService, propertyOwnerObj, propertyInfo, initialPropertyValue, isRecordableWithFilterAttribute)
@@ -196,7 +196,7 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
 
             #endregion
 
-            #region Constructor(s)
+            #region Constructors
 
             internal Property(IUndoRedoService undoRedoService, INotifyPropertyChanged propertyOwnerObj, PropertyInfo propertyInfo, RecordedElement initialPropertyValue, IsRecordableAttribute isRecordableAttribute)
             {
