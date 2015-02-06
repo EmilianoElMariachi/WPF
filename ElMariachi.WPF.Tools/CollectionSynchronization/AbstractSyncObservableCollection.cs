@@ -79,10 +79,6 @@ namespace ElMariachi.WPF.Tools.CollectionSynchronization
 
                 case NotifyCollectionChangedAction.Reset:
                     Clear();
-                    foreach (TModel t in e.NewItems)
-                    {
-                        this.Add(CreateViewModel(t));
-                    }
                     break;
             }
         }
