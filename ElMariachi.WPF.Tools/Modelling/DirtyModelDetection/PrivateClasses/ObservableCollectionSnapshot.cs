@@ -48,7 +48,7 @@ namespace ElMariachi.WPF.Tools.Modelling.DirtyModelDetection.PrivateClasses
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
-            //TODO ENR : (Optimisation) utiliser l'argument notifyCollectionChangedEventArgs pour gérer plus finement les changements
+            //TODO ELM: (Optimisation) utiliser l'argument notifyCollectionChangedEventArgs pour gérer plus finement les changements
             this.State = CheckCollectionChanged();
         }
 
