@@ -74,7 +74,7 @@ namespace ElMariachi.WPF.Tools.Test.Modelling.DirtyModelDetection
                 set
                 {
                     _text = value;
-                    NotifyPropertyChanged("warning");
+                    NotifyPropertyChanged("Text");
                 }
             }
 
@@ -116,7 +116,7 @@ namespace ElMariachi.WPF.Tools.Test.Modelling.DirtyModelDetection
                 set
                 {
                     _text = value;
-                    NotifyPropertyChanged("warning");
+                    NotifyPropertyChanged("Text");
                 }
             }
 
@@ -162,7 +162,7 @@ namespace ElMariachi.WPF.Tools.Test.Modelling.DirtyModelDetection
             var classB = new ClassB
             {
                 ClassesA = new ObservableCollection<ClassA>(),
-                Text = "I'm a the warning of \"" + typeof(ClassB).Name + "\""
+                Text = "I'm a the Text of \"" + typeof(ClassB).Name + "\""
             };
 
             return classB;
@@ -565,6 +565,6 @@ namespace ElMariachi.WPF.Tools.Test.Modelling.DirtyModelDetection
             _modelDirtyDetector.Stop();
             Assert.IsFalse(_modelDirtyDetector.IsDirty);
         }
-    
+
     }
 }
