@@ -7,6 +7,10 @@ using ElMariachi.WPF.Tools.Modelling.DirtyModelDetection.Attributes;
 
 namespace ElMariachi.WPF.Tools.Modelling.DirtyModelDetection.PrivateClasses
 {
+
+    /// <summary>
+    /// Snapshot for properties which value is of <see cref="INotifyPropertyChanged"/> type
+    /// </summary>
     internal class NotifyPropertyChangedSnapshot : SnapshotElement
     {
 

@@ -1,35 +1,57 @@
 ﻿using System;
+using System.Windows.Input;
 
 namespace ElMariachi.WPF.Tools.Commands
 {
-    public class Command : AbstractCommand
+
+    /// <summary>
+    /// An <see cref="ExternalizedCommand"/> is a <see cref="ICommand"/> for which the logic of the methods <see cref="Execute"/> and <see cref="CanExecute"/>
+    /// is defined outside of the command itself.
+    /// </summary>
+    public class ExternalizedCommand : AbstractCommand
     {
+
+        #region Fields & Properties
+
         private readonly Action _executeAction;
         private readonly Action<object> _executeActionWithArg;
         private readonly Func<object, bool> _canExecuteFunctionWithArg;
         private readonly Func<bool> _canExecuteFunction;
 
-        public Command(Action<object> executeActionWithArg)
+        #endregion
+
+        #region Constructors
+
+        public ExternalizedCommand(Action<object> executeActionWithArg)
         {
             _executeActionWithArg = executeActionWithArg;
         }
 
-        public Command(Action<object> executeActionWithArg, Func<object, bool> canExecuteFunctionWithArg)
+        public ExternalizedCommand(Action<object> executeActionWithArg, Func<object, bool> canExecuteFunctionWithArg)
             : this(executeActionWithArg)
         {
             _canExecuteFunctionWithArg = canExecuteFunctionWithArg;
         }
 
-        public Command(Action executeAction)
+        public ExternalizedCommand(Action executeAction)
         {
             _executeAction = executeAction;
         }
 
-        public Command(Action executeAction, Func<bool> canExecuteFunction) : this(executeAction)
+        public ExternalizedCommand(Action executeAction, Func<bool> canExecuteFunction) : this(executeAction)
         {
             _canExecuteFunction = canExecuteFunction;
         }
 
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// <see cref="ICommand.Execute"/>
+        /// </summary>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
         public override void Execute(object parameter)
         {
             if (_executeActionWithArg != null)
@@ -42,6 +64,11 @@ namespace ElMariachi.WPF.Tools.Commands
             }
         }
 
+        /// <summary>
+        /// <see cref="ICommand.CanExecute"/>
+        /// </summary>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
         public override bool CanExecute(object parameter)
         {
             if (_canExecuteFunctionWithArg != null)
@@ -58,9 +85,15 @@ namespace ElMariachi.WPF.Tools.Commands
             }
         }
 
+        /// <summary>
+        /// Triggers <see cref="ICommand.CanExecuteChanged"/> event
+        /// </summary>
         public void FireCanExecuteChanged()
         {
             this.NotifyCanExecuteChanged();
         }
+
+        #endregion
+
     }
 }

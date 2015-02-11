@@ -2,6 +2,11 @@
 
 namespace ElMariachi.WPF.Tools.Modelling.DirtyModelDetection.PrivateClasses
 {
+
+    /// <summary>
+    /// Represent the base class for a snapshot element.
+    /// A snapshot element is used for maintaining the copy value of a property at a snapshot event
+    /// </summary>
     internal abstract class SnapshotElement
     {
 

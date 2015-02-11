@@ -6,6 +6,9 @@ using System.Collections.Specialized;
 
 namespace ElMariachi.WPF.Tools.Modelling.DirtyModelDetection.PrivateClasses
 {
+    /// <summary>
+    /// Snapshot for properties values of type <see cref="ObservableCollection{T}"/>
+    /// </summary>
     internal class ObservableCollectionSnapshot : SnapshotElement
     {
 

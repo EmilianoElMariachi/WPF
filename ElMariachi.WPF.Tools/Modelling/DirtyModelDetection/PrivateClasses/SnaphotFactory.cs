@@ -7,6 +7,12 @@ namespace ElMariachi.WPF.Tools.Modelling.DirtyModelDetection.PrivateClasses
     internal static class SnaphotFactory
     {
 
+        /// <summary>
+        /// Create <see cref="SnapshotElement"/> according to given objet type
+        /// </summary>
+        /// <param name="dirtyModelDetector"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static SnapshotElement Create(DirtyModelDetector dirtyModelDetector, object value)
         {
 

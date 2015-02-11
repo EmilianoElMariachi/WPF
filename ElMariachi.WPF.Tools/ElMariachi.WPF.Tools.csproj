@@ -43,7 +43,7 @@
     <Compile Include="CollectionSynchronization\AbstractSyncObservableCollection.cs" />
     <Compile Include="CollectionSynchronization\SyncObservableCollection.cs" />
     <Compile Include="Commands\AbstractCommand.cs" />
-    <Compile Include="Commands\Command.cs" />
+    <Compile Include="Commands\ExternalizedCommand.cs" />
     <Compile Include="Logging\EventsDefinition\LogEventHandlerArgs.cs" />
     <Compile Include="Logging\LoggedItems\ILoggedItem.cs" />
     <Compile Include="Logging\ILogger.cs" />

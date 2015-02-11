@@ -3,6 +3,9 @@ using System.Windows.Input;
 
 namespace ElMariachi.WPF.Tools.Commands
 {
+    /// <summary>
+    /// Minilalist <see cref="ICommand"/> implementation
+    /// </summary>
     public abstract class AbstractCommand : ICommand
     {
         public abstract void Execute(object parameter);
