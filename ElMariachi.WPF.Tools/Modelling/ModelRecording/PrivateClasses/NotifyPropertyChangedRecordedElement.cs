@@ -120,6 +120,9 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
 
         }
 
+        /// <summary>
+        /// Represents a property for which value changes are added to the <see cref="IUndoRedoService"/> only when property value is stable
+        /// </summary>
         private class FilteredChangeRecordProperty : Property
         {
 
@@ -164,6 +167,9 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
 
         }
 
+        /// <summary>
+        /// Represents an observed property of a <see cref="INotifyPropertyChanged"/>
+        /// </summary>
         private abstract class Property
         {
 
@@ -176,6 +182,9 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
 
             private RecordedElement _value;
 
+            /// <summary>
+            /// The last observed value of this property
+            /// </summary>
             internal RecordedElement Value
             {
                 get { return _value; }
@@ -189,6 +198,9 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
                 }
             }
 
+            /// <summary>
+            /// The real property name
+            /// </summary>
             internal string Name
             {
                 get { return _propertyInfo.Name; }
@@ -241,6 +253,12 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
                 this.Value = RecordedElementFactory.Create(_undoRedoService, _propertyInfo.GetValue(_propertyOwnerObj, null));
             }
 
+            /// <summary>
+            /// Method called when the value of this property is changed, and when this change is not due to a looping effect of the <see cref="IUndoRedoService.Undo"/> or <see cref="IUndoRedoService.Redo"/> method call.
+            /// The implementer is responsible adding the value change to the <see cref="IUndoRedoService"/>
+            /// </summary>
+            /// <param name="newPropertyValue"></param>
+            /// <param name="oldPropertyValue"></param>
             protected abstract void RecordValueChange(object newPropertyValue, object oldPropertyValue);
 
             #endregion

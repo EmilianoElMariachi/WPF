@@ -2,21 +2,32 @@ using System;
 using System.Reflection;
 using System.Timers;
 using System.Windows;
+using ElMariachi.WPF.Tools.UndoRedo.EventsDefinition;
 
 namespace ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands.Helpers
 {
     /// <summary>
-    /// Cette classe fournit un mécanisme d'attente d'état stable de modification d'une propriété d'objet avant d'envoyer la valeur
-    /// modifiée dans le service Undo/Redo
+    /// This class acts as a wrapper of object property value updater. It interacts with a <see cref="IUndoRedoService"/> when the property value is updated
+    /// under the conditions defined below.
     /// 
+    /// The property of the wrapped object is updated by calling the <see cref="UpdatePropertyValue"/> method.
+    /// 
+    /// If after being updated, the property value stay unupdated for at least the time defined by <see cref="DelayMs"/>, then a new <see cref="IRevertibleCommand"/>
+    /// with the property change is added to the <see cref="IUndoRedoService"/>
     /// </summary>
     public class UndoRedoDelayedExecutedRevertibleCommandAppender<T> : IDisposable
     {
-        #region Fields & Accessors
+
+        #region Fields & Properties
+
+        /// <summary>
+        /// The default delay value in milliseconds
+        /// </summary>
+        public const int DEFAULT_DELAY_MS = 1000;
 
         private static readonly bool _canInvokeOnUiThread = Application.Current != null && Application.Current.Dispatcher != null;
 
-        private readonly Timer _timer = new Timer(1000);
+        private readonly Timer _timer = new Timer(DEFAULT_DELAY_MS);
 
         private readonly IUndoRedoService _undoRedoService;
         private readonly object _instance;
@@ -24,8 +35,8 @@ namespace ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands.Helpers
         private bool _invokeOnUiThreadIfPossible = true;
 
         /// <summary>
-        /// Obtient ou défini un booléen indiquant que l'ajout de la commande au service Undo/Redo doit être effectué sur la Thread UI
-        /// (Seulement si un Thread UI est présent)
+        /// Gets or sets a boolean indicating whether the <see cref="IRevertibleCommand"/> should be added in the <see cref="IUndoRedoService"/>
+        /// in the UI Thread. If true, the invocations will be performed only if an UI thread is available.
         /// </summary>
         public bool InvokeOnUiThreadIfPossible
         {
@@ -34,7 +45,7 @@ namespace ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands.Helpers
         }
 
         /// <summary>
-        /// Obtient ou défini la durée d'attente de l'état stable de la propriété
+        /// Gets or sets the waiting delay of the stable property value
         /// </summary>
         public double DelayMs
         {
@@ -43,30 +54,42 @@ namespace ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands.Helpers
         }
 
         /// <summary>
-        /// Obtient un booléen qui indique si un flush est en attente.
+        /// Gets a boolean indicating that a value to be flushed in the <see cref="IUndoRedoService"/> is pending
         /// </summary>
         public bool IsFlushPending { get; private set; }
 
         /// <summary>
-        /// La valeur précédente inscrite dans <see cref="IUndoRedoService"/> au moment du flush
+        /// The reverted property value which will provided to the <see cref="IUndoRedoService"/> at flush time
         /// </summary>
         public T OldValueToFlush { get; set; }
 
         /// <summary>
-        /// Obtient la dernière valeur mise à jour
+        /// Gest the last updated value (see <see cref="UpdatePropertyValue"/>)
         /// </summary>
         public T LastUpdatedValue { get; private set; }
 
         /// <summary>
-        /// Obtient ou défini un booléen qui indique si la valeur ancienne qui sera flushée est lue automatiquement
-        /// à l'appel de la méthode <see cref="UpdatePropertyValue"/>alors qu'aucun Flush n'est en attente
+        /// Gets or sets a boolean indicating how the old property value is taken at flush time.
+        /// If true, when the property value is updated whereas no flush is pending, then the object property is read and 
+        /// assigned to <see cref="OldValueToFlush"/>.
+        /// If false the user is responsible for setting the <see cref="OldValueToFlush"/> which will be used at flush time.
         /// </summary>
         public bool AutoReadOldValueToFlush { get; set; }
+
+        /// <summary>
+        /// Gets or sets the description of the <see cref="IRevertibleCommand"/> sent to the <see cref="IUndoRedoService"/>
+        /// </summary>
+        public string CommandDescription { get; set; }
 
         #endregion
 
         #region Constructors
 
+        /// <summary>
+        /// </summary>
+        /// <param name="undoRedoService">The Undo/Redo service in which property changes will be added</param>
+        /// <param name="instance">The object for which the property will be updated</param>
+        /// <param name="propertyInfo">The property owned by the provided object</param>
         public UndoRedoDelayedExecutedRevertibleCommandAppender(IUndoRedoService undoRedoService, object instance, PropertyInfo propertyInfo)
         {
             if (undoRedoService == null)
@@ -93,9 +116,14 @@ namespace ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands.Helpers
             _timer.Enabled = true;
             _timer.Elapsed += OnTimerElapsed;
 
-            _undoRedoService.BeforeUndoRedoCommandExecuted += (sender, args) => Flush();
+            _undoRedoService.BeforeUndoRedoCommandExecuted += OnBeforeUndoRedoCommandExecuted;
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="undoRedoService">The Undo/Redo service in which property changes will be added</param>
+        /// <param name="instance">The object for which the property will be updated</param>
+        /// <param name="propertyName">The name of an existing property in the provided object</param>
         public UndoRedoDelayedExecutedRevertibleCommandAppender(IUndoRedoService undoRedoService, object instance, string propertyName)
             : this(undoRedoService, instance, instance.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic))
         {
@@ -124,6 +152,7 @@ namespace ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands.Helpers
         public void Dispose()
         {
             _timer.Dispose();
+            _undoRedoService.BeforeUndoRedoCommandExecuted -= OnBeforeUndoRedoCommandExecuted;
         }
 
         public T ReadCurrentPropertyValue()
@@ -134,6 +163,11 @@ namespace ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands.Helpers
         #endregion
 
         #region Private Methods
+
+        private void OnBeforeUndoRedoCommandExecuted(object sender, BeforeUndoRedoCommandExecutedEventHandlerArgs args)
+        {
+            this.Flush();
+        }
 
         private void OnTimerElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
         {
@@ -158,8 +192,6 @@ namespace ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands.Helpers
                 _undoRedoService.AddExecutedCommand(changePropertyRevertibleCommand);
             }
         }
-
-        public string CommandDescription { get; set; }
 
         private void RestartTimer()
         {

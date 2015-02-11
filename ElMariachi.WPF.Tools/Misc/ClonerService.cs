@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace ElMariachi.WPF.Tools
+namespace ElMariachi.WPF.Tools.Misc
 {
     public class ClonerService
     {

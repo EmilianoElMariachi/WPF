@@ -5,6 +5,13 @@ using ElMariachi.WPF.Tools.Modelling.DirtyModelDetection.PrivateClasses;
 
 namespace ElMariachi.WPF.Tools.Modelling.DirtyModelDetection
 {
+
+    /// <summary>
+    /// Detects if a model is dirty.
+    /// A model is considered dirty if its serialized state is changed.
+    /// 
+    /// The serialized state reference is created at call of <see cref="Start"/> method.
+    /// </summary>
     public class DirtyModelDetector : IDirtyModelDetector
     {
 
@@ -15,6 +22,10 @@ namespace ElMariachi.WPF.Tools.Modelling.DirtyModelDetection
 
         private bool _isDirty;
 
+        /// <summary>
+        /// True if the observed model is dirty.
+        /// False if no observed model or if model is not dirty
+        /// </summary>
         public bool IsDirty
         {
             get { return _isDirty; }
@@ -29,6 +40,9 @@ namespace ElMariachi.WPF.Tools.Modelling.DirtyModelDetection
             }
         }
 
+        /// <summary>
+        /// Gets a boolean indicating whether an object is observed
+        /// </summary>
         public bool IsStarted
         {
             get
@@ -41,6 +55,9 @@ namespace ElMariachi.WPF.Tools.Modelling.DirtyModelDetection
 
         #region Events
 
+        /// <summary>
+        /// Event fired when the <see cref="IsDirty"/> property is changed
+        /// </summary>
         public event DirtyStateChangedEventHandler DirtyStateChanged;
 
         private void NotifyDirtyStateChanged(DirtyStateChangedEventHandlerArgs args)
@@ -56,6 +73,10 @@ namespace ElMariachi.WPF.Tools.Modelling.DirtyModelDetection
 
         #region Public Methods
 
+        /// <summary>
+        /// Makes a snapshot of the given object and starts dirty state detection
+        /// </summary>
+        /// <param name="obj"></param>
         public void Start(object obj)
         {
             if (obj == null)
@@ -67,6 +88,9 @@ namespace ElMariachi.WPF.Tools.Modelling.DirtyModelDetection
             _snapshotElement = SnaphotFactory.Create(this, obj);
         }
 
+        /// <summary>
+        /// Restart the dirty state detection of the last observed object (see <see cref="Start"/> method) based on its current state
+        /// </summary>
         public void Restart()
         {
             if (!IsStarted)
@@ -77,6 +101,10 @@ namespace ElMariachi.WPF.Tools.Modelling.DirtyModelDetection
             Start(_snapshotElement.SnapshotValue);
         }
 
+        /// <summary>
+        /// Stops observing changes of current object.
+        /// (do not throws if no object is observed)
+        /// </summary>
         public void Stop()
         {
             CleanUp();

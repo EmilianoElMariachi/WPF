@@ -3,6 +3,11 @@ using System.Linq;
 
 namespace ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands.Helpers
 {
+
+    /// <summary>
+    /// Use this class to add several items to a <see cref="List{T}"/> in a single <see cref="IRevertibleCommand"/>
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class AddListItemsRevertibleCommand<T> : AbstractRevertibleCommand
     {
 

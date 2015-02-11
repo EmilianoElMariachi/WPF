@@ -8,6 +8,8 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
     internal static class RecordedElementFactory
     {
 
+        #region Methods
+
         internal static RecordedElement Create(IUndoRedoService undoRedoService, object obj)
         {
             var objAsIList = obj as IList;
@@ -30,6 +32,7 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
             }
         }
 
+        #endregion
 
     }
 }

@@ -4,6 +4,7 @@ using ElMariachi.WPF.Tools.Logging.Observers.Hub.EventsDefinition;
 namespace ElMariachi.WPF.Tools.Logging.Observers.Hub
 {
     /// <summary>
+    /// TODO ELM : à traduire
     /// Représente une classe capable d'écouter un multitude de log observables, et de
     /// concentrer l'ensemble des logs au sein des évènements FormattedLogEvent et FormattedLogLineEvent
     /// </summary>

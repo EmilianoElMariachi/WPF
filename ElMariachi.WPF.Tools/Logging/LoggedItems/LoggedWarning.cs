@@ -1,13 +1,14 @@
 namespace ElMariachi.WPF.Tools.Logging.LoggedItems
 {
+    /// <summary>
+    /// A logged Warning
+    /// </summary>
     public class LoggedWarning : ILoggedItem
     {
-        public const string TYPE_TEXT = "Warning";
 
-        public LoggedWarning(string warningMessage)
-        {
-            Text = warningMessage;
-        }
+        #region Fields & Properties
+
+        public const string TYPE_TEXT = "Warning";
 
         public string Text { get; private set; }
 
@@ -15,5 +16,17 @@ namespace ElMariachi.WPF.Tools.Logging.LoggedItems
         {
             get { return TYPE_TEXT; }
         }
+
+        #endregion
+
+        #region Constructors
+
+        public LoggedWarning(string warningMessage)
+        {
+            Text = warningMessage;
+        }
+
+        #endregion
+
     }
 }

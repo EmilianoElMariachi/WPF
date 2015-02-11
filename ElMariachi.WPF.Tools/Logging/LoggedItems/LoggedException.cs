@@ -2,8 +2,14 @@ using System;
 
 namespace ElMariachi.WPF.Tools.Logging.LoggedItems
 {
+    /// <summary>
+    /// A logged Exception
+    /// </summary>
     public class LoggedException : ILoggedItem
     {
+
+        #region Fields & Properties
+
         public const string TYPE_TEXT = "Exception";
 
         public string Text
@@ -13,10 +19,7 @@ namespace ElMariachi.WPF.Tools.Logging.LoggedItems
 
         public string TypeText
         {
-            get
-            {
-                return TYPE_TEXT;
-            }
+            get { return TYPE_TEXT; }
         }
 
         private readonly Exception _exception;
@@ -25,6 +28,8 @@ namespace ElMariachi.WPF.Tools.Logging.LoggedItems
         {
             get { return _exception; }
         }
+
+        #endregion
 
         #region Constructors
 

@@ -39,9 +39,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ClonerService.cs" />
-    <Compile Include="CollectionSynchronization\AbstractSyncObservableCollection.cs" />
+    <Compile Include="Misc\ClonerService.cs" />
     <Compile Include="CollectionSynchronization\SyncObservableCollection.cs" />
+    <Compile Include="CollectionSynchronization\ExternalizedSyncObservableCollection.cs" />
     <Compile Include="Commands\AbstractCommand.cs" />
     <Compile Include="Commands\ExternalizedCommand.cs" />
     <Compile Include="Logging\EventsDefinition\LogEventHandlerArgs.cs" />

@@ -1,13 +1,14 @@
 namespace ElMariachi.WPF.Tools.Logging.LoggedItems
 {
+    /// <summary>
+    /// A logged Error
+    /// </summary>
     public class LoggedError : ILoggedItem
     {
-        public const string TYPE_TEXT = "Error";
 
-        public LoggedError(string errorMessage)
-        {
-            Text = errorMessage;
-        }
+        #region Fields & Properties
+
+        public const string TYPE_TEXT = "Error";
 
         public string Text { get; private set; }
 
@@ -15,5 +16,17 @@ namespace ElMariachi.WPF.Tools.Logging.LoggedItems
         {
             get { return TYPE_TEXT; }
         }
+
+        #endregion
+
+        #region Constructors
+
+        public LoggedError(string errorMessage)
+        {
+            Text = errorMessage;
+        }
+
+        #endregion
+
     }
 }

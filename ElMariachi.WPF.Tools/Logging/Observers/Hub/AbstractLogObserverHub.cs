@@ -6,10 +6,12 @@ using ElMariachi.WPF.Tools.Logging.Observers.Hub.EventsDefinition;
 namespace ElMariachi.WPF.Tools.Logging.Observers.Hub
 {
     /// <summary>
+    /// TODO ELM : à traduire
+    /// 
     /// Classe abstraite capable d'écouter une liste de Logger Observables.
     /// Il est à la charge des classes dérivées de disposer de la concentration des logs observés
     /// 
-    /// TODO ELM : supprimer le formattage pour ne fait qu'un HUB simple
+    /// TODO ELM : supprimer le formattage pour ne faire qu'un HUB simple
     /// </summary>
     public abstract class AbstractLogObserverHub
     {
@@ -121,6 +123,7 @@ namespace ElMariachi.WPF.Tools.Logging.Observers.Hub
         protected abstract void OnFormattedLogEvent(string formattedmessage, ILoggedItem originalLoggedItem);
 
         #endregion
+
     }
 
 }

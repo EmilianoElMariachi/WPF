@@ -5,6 +5,7 @@ using ElMariachi.WPF.Tools.Logging.Observers.Hub.EventsDefinition;
 namespace ElMariachi.WPF.Tools.Logging.Observers.Hub
 {
     /// <summary>
+    /// TODO ELM : à traduire
     /// Représente un observateur de log capable de réémettre (router) les logs observés
     /// </summary>
     public class RoutingFormattingLogObserver : FormattingLogObserver
