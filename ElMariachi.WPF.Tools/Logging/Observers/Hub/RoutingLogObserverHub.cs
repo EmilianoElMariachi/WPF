@@ -1,30 +1,33 @@
-﻿using ElMariachi.WPF.Tools.Logging.LoggedItems;
-using ElMariachi.WPF.Tools.Logging.Observers.Hub.EventsDefinition;
+﻿using ElMariachi.WPF.Tools.Logging.EventsDefinition;
 
 namespace ElMariachi.WPF.Tools.Logging.Observers.Hub
 {
     /// <summary>
-    /// TODO ELM : à traduire
-    /// Représente une classe capable d'écouter un multitude de log observables, et de
-    /// concentrer l'ensemble des logs au sein des évènements FormattedLogEvent et FormattedLogLineEvent
+    /// This hub allows the redirection of all <see cref="IObservableLog"/> log events to a single event <see cref="HubLogEvent"/>
     /// </summary>
-    public class RoutingLogObserverHub : AbstractLogObserverHub
+    public class RoutingLogObserverHub : LogObserverHub
     {
-        public event FormattedLogEventHandler FormattedLogEvent;
 
-        protected virtual void NotifyFormattedLogEvent(FormattedLogEventHandlerArgs args)
+        #region Events
+
+        public event LogEventHandler HubLogEvent;
+
+        private void NotifyLogEvent(LogEventHandlerArgs args)
         {
-            var handler = FormattedLogEvent;
-            if (handler != null)
-            {
-                handler(this, args);
-            }
+            var handler = HubLogEvent;
+            if (handler != null) handler(this, args);
         }
 
-        protected override void OnFormattedLogEvent(string formattedmessage, ILoggedItem originalLoggedItem)
+        #endregion
+
+        #region Methods
+
+        protected override void OnLogEvent(object sender, LogEventHandlerArgs args)
         {
-            NotifyFormattedLogEvent(new FormattedLogEventHandlerArgs(formattedmessage, originalLoggedItem));
+            NotifyLogEvent(args);
         }
+
+        #endregion
 
     }
 }
