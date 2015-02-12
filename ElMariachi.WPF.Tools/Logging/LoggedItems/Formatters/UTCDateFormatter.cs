@@ -5,6 +5,7 @@ namespace ElMariachi.WPF.Tools.Logging.LoggedItems.Formatters
 {
     public class UtcDateFormatter : IDateFormatter
     {
+
         #region Methods
 
         public string Format(DateTime dateTime)

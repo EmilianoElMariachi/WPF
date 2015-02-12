@@ -213,6 +213,31 @@ namespace ElMariachi.WPF.Tools.Test.Modelling.ModelRecording
             Assert.AreEqual(initialNumber, _recordedModel.Number);
         }
 
+        [Test]
+        public void UndoingImmediatelyAFilteredProperty()
+        {
+
+            const string text1 = "";
+            _recordedModel.SubClassB.Text = text1;
+
+            _modelRecorder.Record(_undoRedoService, _recordedModel);
+
+            const string text2 = "Cool!";
+            _recordedModel.SubClassB.Text = text2;
+            Assert.AreEqual(0, _modelRecorder.UndoRedoService.NbUndo);
+            Assert.AreEqual(0, _modelRecorder.UndoRedoService.NbRedo);
+
+            Wait(2000);
+            Assert.AreEqual(1, _modelRecorder.UndoRedoService.NbUndo);
+            Assert.AreEqual(0, _modelRecorder.UndoRedoService.NbRedo);
+
+            const string text3 = "Cool N°9!";
+            _recordedModel.SubClassB.Text = text3;
+            _undoRedoService.Undo();
+            Assert.AreEqual(text2, _recordedModel.SubClassB.Text);
+
+        }
+
         private void Wait(int ms)
         {
             var thread = new Thread((o) => Thread.Sleep(ms));
