@@ -39,6 +39,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Logging\Observers\Hub\LogObserverHub.cs" />
     <Compile Include="Misc\ClonerService.cs" />
     <Compile Include="CollectionSynchronization\SyncObservableCollection.cs" />
     <Compile Include="CollectionSynchronization\ExternalizedSyncObservableCollection.cs" />
@@ -56,10 +57,6 @@
     <Compile Include="Logging\LoggedItems\LoggedWarning.cs" />
     <Compile Include="Logging\ObservableLogger.cs" />
     <Compile Include="Logging\Observers\FormattingLogObserver.cs" />
-    <Compile Include="Logging\Observers\Hub\AbstractLogObserverHub.cs" />
-    <Compile Include="Logging\Observers\Hub\EventsDefinition\FormattedLogEventHandlerArgs.cs" />
-    <Compile Include="Logging\Observers\Hub\EventsDefinition\FormattedLogEventHandler.cs" />
-    <Compile Include="Logging\Observers\Hub\RoutingFormattingLogObserver.cs" />
     <Compile Include="Logging\Observers\Hub\RoutingLogObserverHub.cs" />
     <Compile Include="Logging\LoggedItems\Formatters\ILoggedItemFormatter.cs" />
     <Compile Include="Logging\Observers\ToConsoleFormattingLogObserver.cs" />
