@@ -7,6 +7,8 @@ namespace ElMariachi.WPF.Tools.CollectionSynchronization
     /// <summary>
     /// Synchronize this <see cref="ObservableCollection{T}"/> of TViewModel whith a <see cref="ObservableCollection{T}"/> of TModel,
     /// simply by providing the TModel to TViewModel converter (see <see cref="ViewModelBuilder"/>).
+    /// 
+    /// <remarks>The class name is called "Externalized" because the responsability of creating a view model from a model is up to the class user.</remarks>
     /// </summary>
     /// <typeparam name="TViewModel"></typeparam>
     /// <typeparam name="TModel"></typeparam>

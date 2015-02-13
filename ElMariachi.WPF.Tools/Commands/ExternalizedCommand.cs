@@ -7,6 +7,7 @@ namespace ElMariachi.WPF.Tools.Commands
     /// <summary>
     /// An <see cref="ExternalizedCommand"/> is a <see cref="ICommand"/> for which the logic of the methods <see cref="Execute"/> and <see cref="CanExecute"/>
     /// is defined outside of the command itself.
+    /// <remarks>The class name is called "Externalized" because the responsability of creating the command logic is up to the class user.</remarks>
     /// </summary>
     public class ExternalizedCommand : AbstractCommand
     {
