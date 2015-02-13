@@ -47,6 +47,11 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording
             }
         }
 
+        public IDisposable GroupRecords()
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
     }

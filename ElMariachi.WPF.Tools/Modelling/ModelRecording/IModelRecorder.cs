@@ -1,8 +1,9 @@
-﻿using ElMariachi.WPF.Tools.UndoRedo;
+﻿using System;
+using ElMariachi.WPF.Tools.UndoRedo;
 
 namespace ElMariachi.WPF.Tools.Modelling.ModelRecording
 {
-    internal interface IModelRecorder
+    public interface IModelRecorder
     {
 
         /// <summary>
@@ -27,5 +28,10 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording
         /// </summary>
         void Stop();
 
+        /// <summary>
+        /// Records all model changes in a single ss
+        /// </summary>
+        /// <returns></returns>
+        IDisposable GroupRecords();
     }
 }

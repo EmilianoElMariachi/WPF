@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="CollectionSynchronization\ExternalizedSyncObservableCollection.Test.cs" />
     <Compile Include="Modelling\DirtyModelDetection\DirtyModelDetector.Test.cs" />
+    <Compile Include="Modelling\ModelRecording\ModelRecorderWithGroups.Test.cs" />
     <Compile Include="Modelling\ModelRecording\ModelRecorder.Test.cs" />
     <Compile Include="Modelling\ModelRecording\ModelRecorderWithFiltering.Test.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

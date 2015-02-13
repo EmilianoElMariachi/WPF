@@ -13,7 +13,7 @@ namespace ElMariachi.WPF.Tools.Test.Modelling.ModelRecording
     [TestFixture]
     public class ModelRecorderTest
     {
-        private ModelRecorder _modelRecorder;
+        private IModelRecorder _modelRecorder;
         private UndoRedoService _undoRedoService;
         private ClassA _recordedModel;
 

@@ -1,5 +1,4 @@
 ﻿using System.Collections.ObjectModel;
-using System.Threading;
 using System.Windows;
 using ElMariachi.WPF.Tools.Modelling;
 using ElMariachi.WPF.Tools.Modelling.ModelRecording;
@@ -11,7 +10,7 @@ namespace ElMariachi.WPF.Tools.Test.Modelling.ModelRecording
 {
 
     [TestFixture]
-    public class ModelRecorderWithFiltering
+    public class ModelRecorderWithGroups
     {
 
         private IModelRecorder _modelRecorder;
@@ -161,91 +160,31 @@ namespace ElMariachi.WPF.Tools.Test.Modelling.ModelRecording
         }
 
         [Test]
-        public void BasicPropertyChangeIsRecordedWithFiltering()
+        public void RecordGroup()
         {
-            var initialBool = _recordedModel.IsTrue;
-            var initialText = "";
-            _recordedModel.SubClassB.Text = initialText;
-            var initialNumber = _recordedModel.Number;
-
             _modelRecorder.Record(_undoRedoService, _recordedModel);
 
-            _recordedModel.IsTrue = !_recordedModel.IsTrue;
-            _recordedModel.Number++;
-            _recordedModel.IsTrue = !_recordedModel.IsTrue;
-            _recordedModel.SubClassB.Text += "ABC";
+            var initialBool = _recordedModel.IsTrue;
+            var initialNumber = _recordedModel.Number;
+            var initialSubClassA = _recordedModel.SubClassA;
+            var initialText = _recordedModel.SubClassB.Text;
 
-            _recordedModel.IsTrue = !_recordedModel.IsTrue;
-            _recordedModel.Number++;
-            _recordedModel.SubClassB.Text += "ABC";
-
-            _recordedModel.Number++;
-            _recordedModel.IsTrue = !_recordedModel.IsTrue;
-            _recordedModel.Number++;
-            _recordedModel.IsTrue = !_recordedModel.IsTrue;
-
-            _recordedModel.IsTrue = !initialBool;
-
-            _recordedModel.SubClassB.Text += "ABC";
-
-            Assert.AreEqual(0, _modelRecorder.UndoRedoService.NbUndo);
-            Assert.AreEqual(0, _modelRecorder.UndoRedoService.NbRedo);
-
-            Wait(2000);
-
-            Assert.AreEqual(3, _modelRecorder.UndoRedoService.NbUndo);
-            Assert.AreEqual(0, _modelRecorder.UndoRedoService.NbRedo);
+            using (_modelRecorder.GroupRecords())
+            {
+                _recordedModel.IsTrue = !_recordedModel.IsTrue;
+                _recordedModel.Number++;
+                _recordedModel.SubClassA = new ClassA();
+                _recordedModel.SubClassB.Text += " new text";
+            }
 
             _undoRedoService.Undo();
-            Assert.AreEqual(2, _modelRecorder.UndoRedoService.NbUndo);
-            Assert.AreEqual(1, _modelRecorder.UndoRedoService.NbRedo);
-
-            _undoRedoService.Undo();
-            Assert.AreEqual(1, _modelRecorder.UndoRedoService.NbUndo);
-            Assert.AreEqual(2, _modelRecorder.UndoRedoService.NbRedo);
-
-            _undoRedoService.Undo();
-            Assert.AreEqual(0, _modelRecorder.UndoRedoService.NbUndo);
-            Assert.AreEqual(3, _modelRecorder.UndoRedoService.NbRedo);
 
             Assert.AreEqual(initialBool, _recordedModel.IsTrue);
-            Assert.AreEqual(initialText, _recordedModel.SubClassB.Text);
             Assert.AreEqual(initialNumber, _recordedModel.Number);
+            Assert.AreSame(initialSubClassA, _recordedModel.SubClassA);
+            Assert.AreEqual(initialText, _recordedModel.SubClassB.Text);
         }
 
-        [Test]
-        public void UndoingImmediatelyAFilteredProperty()
-        {
-
-            const string text1 = "";
-            _recordedModel.SubClassB.Text = text1;
-
-            _modelRecorder.Record(_undoRedoService, _recordedModel);
-
-            const string text2 = "Cool!";
-            _recordedModel.SubClassB.Text = text2;
-            Assert.AreEqual(0, _modelRecorder.UndoRedoService.NbUndo);
-            Assert.AreEqual(0, _modelRecorder.UndoRedoService.NbRedo);
-
-            Wait(2000);
-            Assert.AreEqual(1, _modelRecorder.UndoRedoService.NbUndo);
-            Assert.AreEqual(0, _modelRecorder.UndoRedoService.NbRedo);
-
-            const string text3 = "Cool N°9!";
-            _recordedModel.SubClassB.Text = text3;
-            _undoRedoService.Undo();
-            Assert.AreEqual(text2, _recordedModel.SubClassB.Text);
-
-        }
-
-        private void Wait(int ms)
-        {
-            var thread = new Thread((o) => Thread.Sleep(ms));
-
-            thread.Start();
-            thread.Join();
-        }
-   
     }
 
 }
