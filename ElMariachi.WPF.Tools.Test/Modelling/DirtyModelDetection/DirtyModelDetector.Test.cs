@@ -566,5 +566,27 @@ namespace ElMariachi.WPF.Tools.Test.Modelling.DirtyModelDetection
             Assert.IsFalse(_modelDirtyDetector.IsDirty);
         }
 
+        [Test]
+        public void NoMemoryLeaksAfterStop()
+        {
+            var weakReference = new WeakReference(_testingClassA);
+
+            _modelDirtyDetector.Start(_testingClassA);
+
+            _testingClassA.ClassB = new ClassB { ClassA = new ClassA() };
+            var classA = new ClassA();
+            _testingClassA.Items.Add(classA);
+            classA.ClassB = new ClassB();
+
+            _testingClassA = null;
+
+            GC.Collect();
+            Assert.True(weakReference.IsAlive);
+
+            _modelDirtyDetector.Stop();
+
+            GC.Collect();
+            Assert.IsFalse(weakReference.IsAlive);
+        }
     }
 }
