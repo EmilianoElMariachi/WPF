@@ -99,13 +99,13 @@
     <Compile Include="UndoRedo\EventsDefinition\UndoRedoCommandExecutedEventHandler.cs" />
     <Compile Include="UndoRedo\EventsDefinition\UndoRedoCommandExecutedEventHandlerArgs.cs" />
     <Compile Include="UndoRedo\IUndoRedoService.cs" />
-    <Compile Include="UndoRedo\RevertibleCommands\AbstractRevertibleCommand.cs" />
+    <Compile Include="UndoRedo\RevertibleCommands\RevertibleCommand.cs" />
     <Compile Include="UndoRedo\RevertibleCommands\Helpers\AddListItemsRevertibleCommand.cs" />
     <Compile Include="UndoRedo\RevertibleCommands\Helpers\ChangePropertyRevertibleCommand.cs" />
     <Compile Include="UndoRedo\RevertibleCommands\Helpers\RemoveListItemsRevertibleCommand.cs" />
     <Compile Include="UndoRedo\RevertibleCommands\Helpers\UndoRedoDelayedExecutedRevertibleCommandAppender.cs" />
     <Compile Include="UndoRedo\RevertibleCommands\IRevertibleCommand.cs" />
-    <Compile Include="UndoRedo\RevertibleCommands\RevertibleCommand.cs" />
+    <Compile Include="UndoRedo\RevertibleCommands\ExternalizedRevertibleCommand.cs" />
     <Compile Include="UndoRedo\RevertibleCommands\RevertibleCommandGroup.cs" />
     <Compile Include="UndoRedo\UndoRedoExecutionCategory.cs" />
     <Compile Include="UndoRedo\UndoRedoService.cs" />

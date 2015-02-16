@@ -63,7 +63,7 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
             {
                 case NotifyCollectionChangedAction.Add:
                 {
-                    _undoRedoService.AddExecutedCommand(new RevertibleCommand(
+                    _undoRedoService.AddExecutedCommand(new ExternalizedRevertibleCommand(
                         () =>
                         {
                             var insertionIndex = notifyCollectionChangedEventArgs.NewStartingIndex;
@@ -83,7 +83,7 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
                 }
                 case NotifyCollectionChangedAction.Move:
                 {
-                    _undoRedoService.AddExecutedCommand(new RevertibleCommand(
+                    _undoRedoService.AddExecutedCommand(new ExternalizedRevertibleCommand(
                         () =>
                         {
                             var oldStartingIndex = notifyCollectionChangedEventArgs.OldStartingIndex;
@@ -114,7 +114,7 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
                 }
                 case NotifyCollectionChangedAction.Remove:
                 {
-                    _undoRedoService.AddExecutedCommand(new RevertibleCommand(
+                    _undoRedoService.AddExecutedCommand(new ExternalizedRevertibleCommand(
                         () =>
                         {
                             foreach (var removedItem in notifyCollectionChangedEventArgs.OldItems)
@@ -134,7 +134,7 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
                 }
                 case NotifyCollectionChangedAction.Replace:
                 {
-                    _undoRedoService.AddExecutedCommand(new RevertibleCommand(
+                    _undoRedoService.AddExecutedCommand(new ExternalizedRevertibleCommand(
                         () =>
                         {
                             var index = notifyCollectionChangedEventArgs.NewStartingIndex;
@@ -156,7 +156,7 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
                 case NotifyCollectionChangedAction.Reset:
                 {
                     var removedItems = _recordedElementItems.Select((element) => element.OldValue).ToArray();
-                    _undoRedoService.AddExecutedCommand(new RevertibleCommand(
+                    _undoRedoService.AddExecutedCommand(new ExternalizedRevertibleCommand(
                         () =>
                         {
                             _objAsIList.Clear();

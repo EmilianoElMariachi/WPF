@@ -7,7 +7,7 @@ namespace ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands.Helpers
     /// Classe permettant de gérer la suppression d'éléments d'une liste, de façon révertible.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class RemoveListItemsRevertibleCommand<T> : AbstractRevertibleCommand
+    public class RemoveListItemsRevertibleCommand<T> : RevertibleCommand
     {
 
         #region Fields & Properties

@@ -1,26 +1,42 @@
-using System;
+using System.Runtime.Serialization;
 
 namespace ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands
 {
-    public class RevertibleCommand : AbstractRevertibleCommand
+    public abstract class RevertibleCommand : IRevertibleCommand
     {
-        private readonly Action _doAction;
-        private readonly Action _undoAction;
 
-        public RevertibleCommand(Action doAction, Action undoAction)
+        #region Fields & Properties
+
+        private static readonly ObjectIDGenerator _objectIdGenerator = new ObjectIDGenerator();
+
+        public long Id { get; private set; }
+
+        public string Description { get; protected set; }
+
+        #endregion
+
+        #region Constructors
+
+        public RevertibleCommand()
         {
-            _doAction = doAction;
-            _undoAction = undoAction;
+            bool firstTime;
+            this.Id = _objectIdGenerator.GetId(this, out firstTime);
         }
 
-        public override void Do()
+        #endregion
+
+        #region Methods
+
+        public abstract void Do();
+
+        public abstract void Undo();
+
+        public override string ToString()
         {
-            _doAction();
+            return "Revertible Command N°" + this.Id;
         }
 
-        public override void Undo()
-        {
-            _undoAction();
-        }
+        #endregion
+
     }
 }

@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands.Helpers
 {
-    public class ChangePropertyRevertibleCommand : AbstractRevertibleCommand
+    public class ChangePropertyRevertibleCommand : RevertibleCommand
     {
 
         #region Fields & Properties
