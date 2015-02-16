@@ -1,10 +1,11 @@
 ﻿using System;
 using ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses;
 using ElMariachi.WPF.Tools.UndoRedo;
+using ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands;
 
 namespace ElMariachi.WPF.Tools.Modelling.ModelRecording
 {
-    public class ModelRecorder : IModelRecorder
+    public class ModelRecorder : IModelRecorder, IRecorderInterface
     {
 
         #region Fields & Properties
@@ -19,6 +20,22 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording
         }
 
         #endregion
+
+
+        public bool CanRecordPropertyChange
+        {
+            get { return !this.UndoRedoService.IsUndoing && !this.UndoRedoService.IsRedoing; }
+        }
+
+        public void RecordPropertyChange(IRecordedPropertyInfo property, IRevertibleCommand revertibleCommand)
+        {
+            if (property.DelayMs != 0)
+            {
+                
+            }
+            this.UndoRedoService.AddExecutedCommand(revertibleCommand);
+
+        }
 
         #region Methods
 
@@ -35,7 +52,7 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording
 
             this.UndoRedoService = undoRedoService;
 
-            _recordedElement = RecordedElementFactory.Create(undoRedoService, objToRecord);
+            _recordedElement = RecordedElementFactory.Create(this, null, objToRecord);
         }
 
         public void Stop()
@@ -53,6 +70,7 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording
         }
 
         #endregion
+
 
     }
 }

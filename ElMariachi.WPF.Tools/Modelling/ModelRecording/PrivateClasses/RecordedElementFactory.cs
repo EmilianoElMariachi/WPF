@@ -10,20 +10,20 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
 
         #region Methods
 
-        internal static RecordedElement Create(IUndoRedoService undoRedoService, object obj)
+        internal static RecordedElement Create(IRecorderInterface recorderInterface, IRecordedPropertyInfo recordedPropertyInfoOwningObj, object obj)
         {
             var objAsIList = obj as IList;
             var objAsNotifyCollectionChanged = obj as INotifyCollectionChanged;
             if (objAsNotifyCollectionChanged != null && objAsIList != null)
             {
-                return new CollectionChangedRecordedElement(undoRedoService, objAsIList, objAsNotifyCollectionChanged);
+                return new CollectionChangedRecordedElement(recorderInterface, objAsIList, objAsNotifyCollectionChanged);
             }
             else
             {
                 var objAsNotifyPropertyChanged = obj as INotifyPropertyChanged;
                 if (objAsNotifyPropertyChanged != null)
                 {
-                    return new NotifyPropertyChangedRecordedElement(undoRedoService, objAsNotifyPropertyChanged);
+                    return new NotifyPropertyChangedRecordedElement(recorderInterface, objAsNotifyPropertyChanged);
                 }
                 else
                 {

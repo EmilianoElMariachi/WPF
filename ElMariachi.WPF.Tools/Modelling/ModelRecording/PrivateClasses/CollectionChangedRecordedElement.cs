@@ -3,27 +3,32 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using ElMariachi.WPF.Tools.UndoRedo;
 using ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands;
 
 namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
 {
 
-    internal class CollectionChangedRecordedElement : RecordedElement
+    internal class CollectionChangedRecordedElement : RecordedElement, IRecordedPropertyInfo
     {
 
         #region Fields & Properties
 
-        private readonly IUndoRedoService _undoRedoService;
+        private readonly IRecorderInterface _recorderInterface;
         private readonly IList _objAsIList;
         private readonly INotifyCollectionChanged _listAsNotifyCollectionChanged;
         private readonly List<RecordedElement> _recordedElementItems = new List<RecordedElement>();
+
+        public uint DelayMs
+        {
+            get { return 0; } //TODO ELM: analyzer le comportement a implémenter
+        }
+
 
         #endregion
 
         #region Constructors
 
-        public CollectionChangedRecordedElement(IUndoRedoService undoRedoService, IList objAsIList, INotifyCollectionChanged objAsNotifyCollectionChanged)
+        public CollectionChangedRecordedElement(IRecorderInterface recorderInterface, IList objAsIList, INotifyCollectionChanged objAsNotifyCollectionChanged)
             : base(objAsNotifyCollectionChanged)
         {
             if (!ReferenceEquals(objAsIList, objAsNotifyCollectionChanged))
@@ -31,14 +36,14 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
                 throw new ArgumentException("Arguments should have the same references");
             }
 
-            _undoRedoService = undoRedoService;
+            _recorderInterface = recorderInterface;
             _objAsIList = objAsIList;
             _listAsNotifyCollectionChanged = objAsNotifyCollectionChanged;
             _listAsNotifyCollectionChanged.CollectionChanged += OnCollectionChanged;
 
             foreach (var item in _objAsIList)
             {
-                _recordedElementItems.Add(RecordedElementFactory.Create(undoRedoService, item));
+                _recordedElementItems.Add(RecordedElementFactory.Create(recorderInterface, this, item));
             }
 
         }
@@ -49,132 +54,127 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
 
         private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
-            if (!_undoRedoService.IsUndoing && !_undoRedoService.IsRedoing)
+            if (_recorderInterface.CanRecordPropertyChange)
             {
-                CreateRevertibleCommandFromCollectionChange(notifyCollectionChangedEventArgs);
+                _recorderInterface.RecordPropertyChange(this, CreateRevertibleCommandFromCollectionChange(notifyCollectionChangedEventArgs));
             }
 
             SynchronizeWithRecordedItems(notifyCollectionChangedEventArgs);
         }
 
-        private void CreateRevertibleCommandFromCollectionChange(NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
+        private IRevertibleCommand CreateRevertibleCommandFromCollectionChange(NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
         {
             switch (notifyCollectionChangedEventArgs.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                {
-                    _undoRedoService.AddExecutedCommand(new ExternalizedRevertibleCommand(
-                        () =>
-                        {
-                            var insertionIndex = notifyCollectionChangedEventArgs.NewStartingIndex;
-                            foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
+                    {
+                        return new ExternalizedRevertibleCommand(
+                            () =>
                             {
-                                _objAsIList.Insert(insertionIndex++, newItem);
-                            }
-                        },
-                        () =>
-                        {
-                            foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
+                                var insertionIndex = notifyCollectionChangedEventArgs.NewStartingIndex;
+                                foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
+                                {
+                                    _objAsIList.Insert(insertionIndex++, newItem);
+                                }
+                            },
+                            () =>
                             {
-                                _objAsIList.RemoveAt(notifyCollectionChangedEventArgs.NewStartingIndex);
-                            }
-                        }));
-                    break;
-                }
+                                foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
+                                {
+                                    _objAsIList.RemoveAt(notifyCollectionChangedEventArgs.NewStartingIndex);
+                                }
+                            });
+                    }
                 case NotifyCollectionChangedAction.Move:
-                {
-                    _undoRedoService.AddExecutedCommand(new ExternalizedRevertibleCommand(
-                        () =>
-                        {
-                            var oldStartingIndex = notifyCollectionChangedEventArgs.OldStartingIndex;
-                            foreach (var item in notifyCollectionChangedEventArgs.OldItems)
+                    {
+                        return new ExternalizedRevertibleCommand(
+                            () =>
                             {
-                                _objAsIList.RemoveAt(oldStartingIndex++);
-                            }
-                            var newStartingIndex = notifyCollectionChangedEventArgs.NewStartingIndex;
-                            foreach (var item in notifyCollectionChangedEventArgs.NewItems)
+                                var oldStartingIndex = notifyCollectionChangedEventArgs.OldStartingIndex;
+                                foreach (var item in notifyCollectionChangedEventArgs.OldItems)
+                                {
+                                    _objAsIList.RemoveAt(oldStartingIndex++);
+                                }
+                                var newStartingIndex = notifyCollectionChangedEventArgs.NewStartingIndex;
+                                foreach (var item in notifyCollectionChangedEventArgs.NewItems)
+                                {
+                                    _objAsIList.Insert(newStartingIndex++, item);
+                                }
+                            },
+                            () =>
                             {
-                                _objAsIList.Insert(newStartingIndex++, item);
-                            }
-                        },
-                        () =>
-                        {
-                            var newStartingIndex = notifyCollectionChangedEventArgs.NewStartingIndex;
-                            foreach (var item in notifyCollectionChangedEventArgs.NewItems)
-                            {
-                                _objAsIList.RemoveAt(newStartingIndex++);
-                            }
-                            var oldStartingIndex = notifyCollectionChangedEventArgs.OldStartingIndex;
-                            foreach (var item in notifyCollectionChangedEventArgs.OldItems)
-                            {
-                                _objAsIList.Insert(oldStartingIndex++, item);
-                            }
-                        }));
-                    break;
-                }
+                                var newStartingIndex = notifyCollectionChangedEventArgs.NewStartingIndex;
+                                foreach (var item in notifyCollectionChangedEventArgs.NewItems)
+                                {
+                                    _objAsIList.RemoveAt(newStartingIndex++);
+                                }
+                                var oldStartingIndex = notifyCollectionChangedEventArgs.OldStartingIndex;
+                                foreach (var item in notifyCollectionChangedEventArgs.OldItems)
+                                {
+                                    _objAsIList.Insert(oldStartingIndex++, item);
+                                }
+                            });
+                    }
                 case NotifyCollectionChangedAction.Remove:
-                {
-                    _undoRedoService.AddExecutedCommand(new ExternalizedRevertibleCommand(
-                        () =>
-                        {
-                            foreach (var removedItem in notifyCollectionChangedEventArgs.OldItems)
+                    {
+                        return new ExternalizedRevertibleCommand(
+                            () =>
                             {
-                                _objAsIList.RemoveAt(notifyCollectionChangedEventArgs.OldStartingIndex);
-                            }
-                        },
-                        () =>
-                        {
-                            var insertionIndex = notifyCollectionChangedEventArgs.OldStartingIndex;
-                            foreach (var removedItem in notifyCollectionChangedEventArgs.OldItems)
+                                foreach (var removedItem in notifyCollectionChangedEventArgs.OldItems)
+                                {
+                                    _objAsIList.RemoveAt(notifyCollectionChangedEventArgs.OldStartingIndex);
+                                }
+                            },
+                            () =>
                             {
-                                _objAsIList.Insert(insertionIndex++, removedItem);
-                            }
-                        }));
-                    break;
-                }
+                                var insertionIndex = notifyCollectionChangedEventArgs.OldStartingIndex;
+                                foreach (var removedItem in notifyCollectionChangedEventArgs.OldItems)
+                                {
+                                    _objAsIList.Insert(insertionIndex++, removedItem);
+                                }
+                            });
+                    }
                 case NotifyCollectionChangedAction.Replace:
-                {
-                    _undoRedoService.AddExecutedCommand(new ExternalizedRevertibleCommand(
-                        () =>
-                        {
-                            var index = notifyCollectionChangedEventArgs.NewStartingIndex;
-                            foreach (var replacedItem in notifyCollectionChangedEventArgs.NewItems)
+                    {
+                        return new ExternalizedRevertibleCommand(
+                            () =>
                             {
-                                _objAsIList[index++] = replacedItem;
-                            }
-                        },
-                        () =>
-                        {
-                            var index = notifyCollectionChangedEventArgs.OldStartingIndex;
-                            foreach (var previousItem in notifyCollectionChangedEventArgs.OldItems)
+                                var index = notifyCollectionChangedEventArgs.NewStartingIndex;
+                                foreach (var replacedItem in notifyCollectionChangedEventArgs.NewItems)
+                                {
+                                    _objAsIList[index++] = replacedItem;
+                                }
+                            },
+                            () =>
                             {
-                                _objAsIList[index++] = previousItem;
-                            }
-                        }));
-                    break;
-                }
+                                var index = notifyCollectionChangedEventArgs.OldStartingIndex;
+                                foreach (var previousItem in notifyCollectionChangedEventArgs.OldItems)
+                                {
+                                    _objAsIList[index++] = previousItem;
+                                }
+                            });
+                    }
                 case NotifyCollectionChangedAction.Reset:
-                {
-                    var removedItems = _recordedElementItems.Select((element) => element.OldValue).ToArray();
-                    _undoRedoService.AddExecutedCommand(new ExternalizedRevertibleCommand(
-                        () =>
-                        {
-                            _objAsIList.Clear();
-                        },
-                        () =>
-                        {
-                            foreach (var removedItem in removedItems)
+                    {
+                        var removedItems = _recordedElementItems.Select((element) => element.OldValue).ToArray();
+                        return new ExternalizedRevertibleCommand(
+                            () =>
                             {
-                                _objAsIList.Add(removedItem);
-                            }
+                                _objAsIList.Clear();
+                            },
+                            () =>
+                            {
+                                foreach (var removedItem in removedItems)
+                                {
+                                    _objAsIList.Add(removedItem);
+                                }
 
-                        }));
-                    break;
-                }
+                            });
+                    }
                 default:
-                {
-                    throw new Exception("unknown " + typeof (NotifyCollectionChangedAction).Name + " = " + notifyCollectionChangedEventArgs.Action);
-                }
+                    {
+                        throw new Exception("unknown " + typeof(NotifyCollectionChangedAction).Name + " = " + notifyCollectionChangedEventArgs.Action);
+                    }
             }
 
         }
@@ -184,67 +184,67 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
             switch (notifyCollectionChangedEventArgs.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                {
-                    var insertionIndex = notifyCollectionChangedEventArgs.NewStartingIndex;
-                    foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
                     {
-                        _recordedElementItems.Insert(insertionIndex, RecordedElementFactory.Create(_undoRedoService, newItem));
+                        var insertionIndex = notifyCollectionChangedEventArgs.NewStartingIndex;
+                        foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
+                        {
+                            _recordedElementItems.Insert(insertionIndex, RecordedElementFactory.Create(_recorderInterface, this, newItem));
+                        }
+                        break;
                     }
-                    break;
-                }
                 case NotifyCollectionChangedAction.Move:
-                {
-                    var oldStartingIndex = notifyCollectionChangedEventArgs.OldStartingIndex;
-
-                    var itemsToMove = new List<RecordedElement>();
-                    foreach (var item in notifyCollectionChangedEventArgs.OldItems)
                     {
-                        itemsToMove.Add(_recordedElementItems[oldStartingIndex]);
-                        _recordedElementItems.RemoveAt(oldStartingIndex++);
-                    }
+                        var oldStartingIndex = notifyCollectionChangedEventArgs.OldStartingIndex;
 
-                    var newStartingIndex = notifyCollectionChangedEventArgs.NewStartingIndex;
-                    foreach (var item in itemsToMove)
-                    {
-                        _recordedElementItems.Insert(newStartingIndex++, item);
-                    }
+                        var itemsToMove = new List<RecordedElement>();
+                        foreach (var item in notifyCollectionChangedEventArgs.OldItems)
+                        {
+                            itemsToMove.Add(_recordedElementItems[oldStartingIndex]);
+                            _recordedElementItems.RemoveAt(oldStartingIndex++);
+                        }
 
-                    break;
-                }
+                        var newStartingIndex = notifyCollectionChangedEventArgs.NewStartingIndex;
+                        foreach (var item in itemsToMove)
+                        {
+                            _recordedElementItems.Insert(newStartingIndex++, item);
+                        }
+
+                        break;
+                    }
                 case NotifyCollectionChangedAction.Remove:
-                {
-                    foreach (var removedItem in notifyCollectionChangedEventArgs.OldItems)
                     {
-                        _recordedElementItems[notifyCollectionChangedEventArgs.OldStartingIndex].Release();
-                        _recordedElementItems.RemoveAt(notifyCollectionChangedEventArgs.OldStartingIndex);
-                    }
+                        foreach (var removedItem in notifyCollectionChangedEventArgs.OldItems)
+                        {
+                            _recordedElementItems[notifyCollectionChangedEventArgs.OldStartingIndex].Release();
+                            _recordedElementItems.RemoveAt(notifyCollectionChangedEventArgs.OldStartingIndex);
+                        }
 
-                    break;
-                }
+                        break;
+                    }
                 case NotifyCollectionChangedAction.Replace:
-                {
-                    var index = notifyCollectionChangedEventArgs.NewStartingIndex;
-                    foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
                     {
-                        _recordedElementItems[index].Release();
-                        _recordedElementItems[index] = RecordedElementFactory.Create(_undoRedoService, newItem);
-                        index++;
+                        var index = notifyCollectionChangedEventArgs.NewStartingIndex;
+                        foreach (var newItem in notifyCollectionChangedEventArgs.NewItems)
+                        {
+                            _recordedElementItems[index].Release();
+                            _recordedElementItems[index] = RecordedElementFactory.Create(_recorderInterface, this, newItem);
+                            index++;
+                        }
+                        break;
                     }
-                    break;
-                }
                 case NotifyCollectionChangedAction.Reset:
-                {
-                    foreach (var item in _recordedElementItems)
                     {
-                        item.Release();
+                        foreach (var item in _recordedElementItems)
+                        {
+                            item.Release();
+                        }
+                        _recordedElementItems.Clear();
+                        break;
                     }
-                    _recordedElementItems.Clear();
-                    break;
-                }
                 default:
-                {
-                    throw new Exception("unknown " + typeof (NotifyCollectionChangedAction).Name + " = " + notifyCollectionChangedEventArgs.Action);
-                }
+                    {
+                        throw new Exception("unknown " + typeof(NotifyCollectionChangedAction).Name + " = " + notifyCollectionChangedEventArgs.Action);
+                    }
             }
 
         }

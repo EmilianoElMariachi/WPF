@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using ElMariachi.WPF.Tools.Modelling.ModelRecording.Attributes;
-using ElMariachi.WPF.Tools.UndoRedo;
 using ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands.Helpers;
 
 namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
@@ -21,10 +20,10 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
 
         #region Constructors
 
-        internal NotifyPropertyChangedRecordedElement(IUndoRedoService undoRedoService, INotifyPropertyChanged objAsNotifyPropertyChanged)
+        internal NotifyPropertyChangedRecordedElement(IRecorderInterface recorderInterface, INotifyPropertyChanged objAsNotifyPropertyChanged)
             : base(objAsNotifyPropertyChanged)
         {
-            if (undoRedoService == null) { throw new ArgumentNullException("undoRedoService"); }
+            if (recorderInterface == null) { throw new ArgumentNullException("recorderInterface"); }
             if (objAsNotifyPropertyChanged == null) { throw new ArgumentNullException("objAsNotifyPropertyChanged"); }
 
             _objAsNotifyPropertyChanged = objAsNotifyPropertyChanged;
@@ -43,7 +42,7 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
                     continue;
                 }
 
-                var property = PropertyFactory.Create(undoRedoService, objAsNotifyPropertyChanged, (IsRecordableAttribute)attributes[0], propertyInfo);
+                var property = new Property(recorderInterface, objAsNotifyPropertyChanged, propertyInfo, (IsRecordableAttribute)attributes[0]);
 
                 _properties.Add(property.Name, property);
             }
@@ -78,104 +77,15 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
 
         #region Private Classe(s)
 
-        private static class PropertyFactory
-        {
-            internal static Property Create(IUndoRedoService undoRedoService, INotifyPropertyChanged objAsNotifyPropertyChanged, IsRecordableAttribute isRecordableAttribute, PropertyInfo propertyInfo)
-            {
-                var recordableWithFilterAttribute = isRecordableAttribute as IsRecordableWithFilterAttribute;
-
-                Property property;
-                if (recordableWithFilterAttribute != null)
-                {
-                    property = new FilteredChangeRecordProperty(undoRedoService, objAsNotifyPropertyChanged, propertyInfo, RecordedElementFactory.Create(undoRedoService, propertyInfo.GetValue(objAsNotifyPropertyChanged, null)), recordableWithFilterAttribute);
-                }
-                else
-                {
-                    property = new EveryChangeRecordProperty(undoRedoService, objAsNotifyPropertyChanged, propertyInfo, RecordedElementFactory.Create(undoRedoService, propertyInfo.GetValue(objAsNotifyPropertyChanged, null)), isRecordableAttribute);
-                }
-                return property;
-            }
-        }
-
-        private class EveryChangeRecordProperty : Property
-        {
-
-            #region Constructors
-
-            internal EveryChangeRecordProperty(IUndoRedoService undoRedoService, INotifyPropertyChanged propertyOwnerObj, PropertyInfo propertyInfo, RecordedElement initialPropertyValue, IsRecordableAttribute isRecordableAttribute)
-                : base(undoRedoService, propertyOwnerObj, propertyInfo, initialPropertyValue, isRecordableAttribute)
-            {
-            }
-
-            #endregion
-
-            #region Methods
-
-            protected override void RecordValueChange(object newPropertyValue, object oldPropertyValue)
-            {
-                _undoRedoService.AddExecutedCommand(new ChangePropertyRevertibleCommand(_propertyOwnerObj, this.Name, newPropertyValue, oldPropertyValue, _isRecordableAttribute.Description));
-            }
-
-            #endregion
-
-        }
-
-        /// <summary>
-        /// Represents a property for which value changes are added to the <see cref="IUndoRedoService"/> only when property value is stable
-        /// </summary>
-        private class FilteredChangeRecordProperty : Property
-        {
-
-            #region Fields & Properties
-
-            private readonly UndoRedoDelayedExecutedRevertibleCommandAppender<object> _undoRedoDelayedExecutedRevertibleCommandAppender;
-
-            #endregion
-
-            #region Constructors
-
-            internal FilteredChangeRecordProperty(IUndoRedoService undoRedoService, INotifyPropertyChanged propertyOwnerObj, PropertyInfo propertyInfo, RecordedElement initialPropertyValue, IsRecordableWithFilterAttribute isRecordableWithFilterAttribute)
-                : base(undoRedoService, propertyOwnerObj, propertyInfo, initialPropertyValue, isRecordableWithFilterAttribute)
-            {
-                _undoRedoDelayedExecutedRevertibleCommandAppender = new UndoRedoDelayedExecutedRevertibleCommandAppender<object>(undoRedoService, _propertyOwnerObj, propertyInfo)
-                {
-                    DelayMs = isRecordableWithFilterAttribute.FilterTimeMs,
-                    CommandDescription = _isRecordableAttribute.Description,
-                };
-            }
-
-            #endregion
-
-            #region Methods
-
-            protected override void RecordValueChange(object newPropertyValue, object oldPropertyValue)
-            {
-                if (!_undoRedoDelayedExecutedRevertibleCommandAppender.IsFlushPending)
-                {
-                    _undoRedoDelayedExecutedRevertibleCommandAppender.OldValueToFlush = oldPropertyValue;
-                }
-                _undoRedoDelayedExecutedRevertibleCommandAppender.UpdatePropertyValue(newPropertyValue);
-            }
-
-            internal override void Release()
-            {
-                base.Release();
-                _undoRedoDelayedExecutedRevertibleCommandAppender.Dispose();
-            }
-
-            #endregion
-
-        }
-
         /// <summary>
         /// Represents an observed property of a <see cref="INotifyPropertyChanged"/>
         /// </summary>
-        private abstract class Property
+        private class Property : IRecordedPropertyInfo
         {
 
             #region Fields & Properties
 
-            protected readonly IUndoRedoService _undoRedoService;
+            protected readonly IRecorderInterface _recorderInterface;
             protected readonly INotifyPropertyChanged _propertyOwnerObj;
             protected readonly PropertyInfo _propertyInfo;
             protected readonly IsRecordableAttribute _isRecordableAttribute;
@@ -206,23 +116,40 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
                 get { return _propertyInfo.Name; }
             }
 
+            public uint DelayMs
+            {
+                get;
+                private set;
+            }
+
             #endregion
 
             #region Constructors
 
-            internal Property(IUndoRedoService undoRedoService, INotifyPropertyChanged propertyOwnerObj, PropertyInfo propertyInfo, RecordedElement initialPropertyValue, IsRecordableAttribute isRecordableAttribute)
+            internal Property(IRecorderInterface recorderInterface, INotifyPropertyChanged propertyOwnerObj, PropertyInfo propertyInfo, IsRecordableAttribute isRecordableAttribute)
             {
-                if (undoRedoService == null) { throw new ArgumentNullException("undoRedoService"); }
+                if (recorderInterface == null) { throw new ArgumentNullException("recorderInterface"); }
                 if (propertyOwnerObj == null) { throw new ArgumentNullException("propertyOwnerObj"); }
                 if (propertyInfo == null) { throw new ArgumentNullException("propertyInfo"); }
-                if (initialPropertyValue == null) { throw new ArgumentNullException("initialPropertyValue"); }
                 if (isRecordableAttribute == null) { throw new ArgumentNullException("isRecordableAttribute"); }
 
-                _undoRedoService = undoRedoService;
+                _recorderInterface = recorderInterface;
                 _propertyOwnerObj = propertyOwnerObj;
                 _propertyInfo = propertyInfo;
-                _value = initialPropertyValue;
                 _isRecordableAttribute = isRecordableAttribute;
+
+                _value = RecordedElementFactory.Create(_recorderInterface, this, _propertyInfo.GetValue(_propertyOwnerObj, null));
+
+                var recordableWithFilterAttribute = isRecordableAttribute as IsRecordableWithFilterAttribute;
+                if (recordableWithFilterAttribute != null)
+                {
+                    this.DelayMs = recordableWithFilterAttribute.FilterTimeMs;
+                }
+                else
+                {
+                    this.DelayMs = 0;
+                }
+
             }
 
             #endregion
@@ -245,21 +172,14 @@ namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
                 var oldValue = this.Value.OldValue;
                 var newPropertyValue = _propertyInfo.GetValue(_propertyOwnerObj, null);
 
-                if (!_undoRedoService.IsUndoing && !_undoRedoService.IsRedoing)
+                if (_recorderInterface.CanRecordPropertyChange)
                 {
-                    RecordValueChange(newPropertyValue, oldValue);
+                    _recorderInterface.RecordPropertyChange(this, new ChangePropertyRevertibleCommand(_propertyOwnerObj, this.Name, newPropertyValue, oldValue, _isRecordableAttribute.Description));
                 }
 
-                this.Value = RecordedElementFactory.Create(_undoRedoService, _propertyInfo.GetValue(_propertyOwnerObj, null));
+                this.Value = RecordedElementFactory.Create(_recorderInterface, this, _propertyInfo.GetValue(_propertyOwnerObj, null));
             }
 
-            /// <summary>
-            /// Method called when the value of this property is changed, and when this change is not due to a looping effect of the <see cref="IUndoRedoService.Undo"/> or <see cref="IUndoRedoService.Redo"/> method call.
-            /// The implementer is responsible adding the value change to the <see cref="IUndoRedoService"/>
-            /// </summary>
-            /// <param name="newPropertyValue"></param>
-            /// <param name="oldPropertyValue"></param>
-            protected abstract void RecordValueChange(object newPropertyValue, object oldPropertyValue);
 
             #endregion
 

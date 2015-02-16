@@ -85,7 +85,7 @@
     <Compile Include="Modelling\ModelRecording\ModelRecorder.cs" />
     <Compile Include="Modelling\ModelRecording\PrivateClasses\CollectionChangedRecordedElement.cs" />
     <Compile Include="Modelling\ModelRecording\PrivateClasses\DefaultRecordedElement.cs" />
-    <Compile Include="Modelling\ModelRecording\PrivateClasses\IRecorder.cs" />
+    <Compile Include="Modelling\ModelRecording\PrivateClasses\IRecorderInterface.cs" />
     <Compile Include="Modelling\ModelRecording\PrivateClasses\NotifyPropertyChangedRecordedElement.cs" />
     <Compile Include="Modelling\ModelRecording\PrivateClasses\RecordedElement.cs" />
     <Compile Include="Modelling\ModelRecording\PrivateClasses\RecordedElementFactory.cs" />

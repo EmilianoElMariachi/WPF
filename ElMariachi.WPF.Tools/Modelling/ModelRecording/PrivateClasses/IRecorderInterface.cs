@@ -6,21 +6,19 @@ using ElMariachi.WPF.Tools.UndoRedo.RevertibleCommands;
 
 namespace ElMariachi.WPF.Tools.Modelling.ModelRecording.PrivateClasses
 {
-    interface IRecorder
+    interface IRecorderInterface
     {
         bool CanRecordPropertyChange { get; }
 
-        void RecordPropertyChange(Property property, IRevertibleCommand revertibleCommand);
+        void RecordPropertyChange(IRecordedPropertyInfo recordedPropertyInfo, IRevertibleCommand revertibleCommand);
 
 
     }
 
-    internal class Property
+    public interface IRecordedPropertyInfo
     {
 
-        public int Delay { get; set; }
-
-        public string RecordGroupName { get; set; }
+        uint DelayMs { get; }
 
     }
 }
